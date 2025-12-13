@@ -1,0 +1,163 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined static method Session\:\:checkCentralAccess\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: front/createpdf.php
+
+		-
+			message: '#^Call to an undefined static method Dropdown\:\:showNumber\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 7
+			path: inc/config.class.php
+
+		-
+			message: '#^Function exportArrayToDB not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/config.class.php
+
+		-
+			message: '#^Function importArrayFromDB not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/config.class.php
+
+		-
+			message: '#^Instantiated class ContractType not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/config.class.php
+
+		-
+			message: '#^Call to static method dropdown\(\) on an unknown class ContractType\.$#'
+			identifier: class.notFound
+			count: 5
+			path: inc/controllerinfo.class.php
+
+		-
+			message: '#^Function getAncestorsOf not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/controllerinfo.class.php
+
+		-
+			message: '#^Call to an undefined static method GlpiPlugin\\Gdprropa\\CreatePDF\:\:createTabEntry\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Call to an undefined static method Html\:\:convDate\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 2
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Call to static method getOwnerInfo\(\) on an unknown class GlpiPlugin\\Gdprropa\\PluginGdprownerOwner\.$#'
+			identifier: class.notFound
+			count: 2
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Call to static method getWarrantyExpir\(\) on an unknown class Infocom\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Class DBmysqlIterator not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Function getAncestorsOf not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Method GlpiPlugin\\Gdprropa\\CreatePDF\:\:getRecordsForEntity\(\) has invalid return type DBmysqlIterator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/createpdf.class.php
+
+		-
+			message: '#^Call to an undefined static method GlpiPlugin\\Gdprropa\\CreatePDF\:\:getSearchURL\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 2
+			path: inc/menu.class.php
+
+		-
+			message: '#^Function getAncestorsOf not found\.$#'
+			identifier: function.notFound
+			count: 2
+			path: inc/personaldatacategory.class.php
+
+		-
+			message: '#^Call to an undefined static method Html\:\:showDateField\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: inc/record.class.php
+
+		-
+			message: '#^Call to static method dropdown\(\) on an unknown class State\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record.class.php
+
+		-
+			message: '#^Call to static method sanitize\(\) on an unknown class Glpi\\Toolbox\\Sanitizer\.$#'
+			identifier: class.notFound
+			count: 3
+			path: inc/record.class.php
+
+		-
+			message: '#^Class Log not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record.class.php
+
+		-
+			message: '#^Call to static method getWarrantyExpir\(\) on an unknown class Infocom\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record_contract.class.php
+
+		-
+			message: '#^Function getEntitiesRestrictRequest not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/record_contract.class.php
+
+		-
+			message: '#^Method GlpiPlugin\\Gdprropa\\Record_Contract\:\:getContracts\(\) has invalid return type DBmysqlIterator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record_contract.class.php
+
+		-
+			message: '#^Function getAncestorsOf not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/record_personaldatacategory.class.php
+
+		-
+			message: '#^Method GlpiPlugin\\Gdprropa\\Record_SecurityMeasure\:\:getListForItem\(\) has invalid return type DBmysqlIterator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record_securitymeasure.class.php
+
+		-
+			message: '#^Method GlpiPlugin\\Gdprropa\\Record_Software\:\:getListForItem\(\) has invalid return type DBmysqlIterator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/record_software.class.php
+
+		-
+			message: '#^Function getAncestorsOf not found\.$#'
+			identifier: function.notFound
+			count: 1
+			path: inc/securitymeasure.class.php
