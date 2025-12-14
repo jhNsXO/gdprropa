@@ -53,7 +53,7 @@ define('GDPRROPA_PLUGIN_VERSION', '1.0.3');
 // Minimal GLPI version, inclusive
 define('GDPRROPA_PLUGIN_MIN_GLPI_VERSION', '10.0.0');
 // Maximum GLPI version, exclusive
-define('GDPRROPA_PLUGIN_MAX_GLPI_VERSION', '10.99.99');
+define('GDPRROPA_PLUGIN_MAX_GLPI_VERSION', '12.0');
 
 function plugin_init_gdprropa()
 {

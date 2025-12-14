@@ -226,12 +226,17 @@ class Record_SecurityMeasure extends CommonDBRelation
         return true;
     }
 
-    public static function getListForItem(CommonDBTM $item): DBmysqlIterator
+    public static function getListForItem(CommonDBTM $item, int $start = 0, int $limit = 0, array $order = []): DBmysqlIterator
     {
         global $DB;
 
         $params = static::getListForItemParams($item, true);
-
+        // Optionally handle $start, $limit, $order if needed by $DB->request
+        if ($start || $limit || $order) {
+            $params['start'] = $start;
+            $params['limit'] = $limit;
+            $params['order'] = $order;
+        }
         return $DB->request($params);
     }
 

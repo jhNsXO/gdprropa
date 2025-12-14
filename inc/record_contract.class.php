@@ -400,68 +400,84 @@ class Record_Contract extends CommonDBRelation
             }
         }
 
-        if (!($p['entity'] < 0) && $p['entity_sons']) {
-            if (is_array($p['entity'])) {
-                echo "entity_sons options is not available with array of entity";
-            } else {
-                $p['entity'] = getSonsOf('glpi_entities', $p['entity']);
-            }
+        $criteria = [
+            'SELECT' => [
+                'glpi_contracts.id',
+                'glpi_contracts.name AS contracts_name',
+                'glpi_contracts.num AS contracts_num',
+                'glpi_contracts.entities_id',
+                'glpi_contracts.begin_date AS contracts_begin_date',
+                'glpi_contracts.max_links_allowed',
+                'glpi_contracttypes.name AS contracttypes_names',
+                new \QueryExpression('GROUP_CONCAT(DISTINCT `glpi_suppliers`.`name`) AS suppliers_names')
+            ],
+            'FROM' => 'glpi_contracttypes',
+            'INNER JOIN' => [
+                'glpi_contracts' => [
+                    'ON' => [
+                        'glpi_contracttypes' => 'id',
+                        'glpi_contracts' => 'contracttypes_id'
+                    ]
+                ]
+            ],
+            'LEFT JOIN' => [
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_contracts' => 'entities_id',
+                        'glpi_entities' => 'id'
+                    ]
+                ],
+                'glpi_contracts_suppliers' => [
+                    'ON' => [
+                        'glpi_contracts' => 'id',
+                        'glpi_contracts_suppliers' => 'contracts_id'
+                    ]
+                ],
+                'glpi_suppliers' => [
+                    'ON' => [
+                        'glpi_contracts_suppliers' => 'suppliers_id',
+                        'glpi_suppliers' => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_contracts.is_deleted' => 0,
+                'glpi_contracts.is_template' => 0
+            ],
+            'GROUPBY' => 'glpi_contracts.id',
+            'ORDER' => [
+                'glpi_entities.completename',
+                'glpi_contracts.name ASC',
+                'glpi_contracts.begin_date DESC'
+            ]
+        ];
+
+        // Add entity restriction
+        if ($p['entity'] >= 0) {
+            $criteria['WHERE'] += getEntitiesRestrictCriteria('glpi_contracts', 'entities_id', $p['entity'], true);
         }
 
-        $entrest = "";
-        $idrest = "";
-        $expired = "";
-        $contracttypes = "";
-        if ($p['entity'] >= 0) {
-            $entrest = getEntitiesRestrictRequest("AND", "glpi_contracts", "entities_id", $p['entity'], true);
-        }
+        // Add used contracts restriction
         if (count($p['used'])) {
-            $idrest = " AND `glpi_contracts`.`id` NOT IN (" . implode(",", $p['used']) . ") ";
+            $criteria['WHERE']['glpi_contracts.id'] = ['NOT IN', $p['used']];
         }
+
+        // Add expired restriction
         if (!$p['expired']) {
-            $expired = " AND (DATEDIFF(ADDDATE(`glpi_contracts`.`begin_date`, INTERVAL
-                        `glpi_contracts`.`duration` MONTH), CURDATE()) > '0'
-                        OR `glpi_contracts`.`begin_date` IS NULL
-                        OR (`glpi_contracts`.`duration` = 0
-                        AND DATEDIFF(`glpi_contracts`.`begin_date`, CURDATE() ) < '0' )
-                        OR `glpi_contracts`.`renewal` = 1)";
+            $criteria['WHERE'][] = new \QueryExpression("DATEDIFF(ADDDATE(`glpi_contracts`.`begin_date`, INTERVAL `glpi_contracts`.`duration` MONTH), CURDATE()) > 0 OR `glpi_contracts`.`begin_date` IS NULL OR (`glpi_contracts`.`duration` = 0 AND DATEDIFF(`glpi_contracts`.`begin_date`, CURDATE()) < 0) OR `glpi_contracts`.`renewal` = 1");
         }
+
+        // Add contract types restriction
         if (isset($p['contracttypes']) && count($p['contracttypes'])) {
-            $contracttypes = " AND `glpi_contracts`.`contracttypes_id` IN (" . implode(",", $p['contracttypes']) . ")";
+            $criteria['WHERE']['glpi_contracts.contracttypes_id'] = $p['contracttypes'];
         }
-        $query = "SELECT
-                  `glpi_contracts`.`id` AS `id`,
-                  `glpi_contracts`.`name` AS `contracts_name`,
-                  `glpi_contracts`.`num` AS `contracts_num`,
-                  `glpi_contracts`.`entities_id` AS `entities_id`,
-                  `glpi_contracts`.`begin_date` AS `contracts_begin_date`,
-                  `glpi_contracts`.`max_links_allowed` AS `max_links_allowed`,
-                  `glpi_contracttypes`.`name` AS `contracttypes_names`,
-                  GROUP_CONCAT(DISTINCT `glpi_suppliers`.`name`) `suppliers_names`
-               FROM `glpi_contracttypes`, `glpi_contracts`
-                  LEFT JOIN `glpi_entities`
-                     ON (`glpi_contracts`.`entities_id` = `glpi_entities`.`id`)
-                  LEFT JOIN `glpi_contracts_suppliers`
-                     ON (`glpi_contracts`.`id` = `glpi_contracts_suppliers`.`contracts_id`)
-                  LEFT JOIN `glpi_suppliers`
-                     ON (`glpi_contracts_suppliers`.`suppliers_id` = `glpi_suppliers`.`id`)
-               WHERE
-                  `glpi_contracts`.`is_deleted` = 0 AND
-                  `glpi_contracts`.`is_template` = 0 AND
-                  `glpi_contracts`.`contracttypes_id` = `glpi_contracttypes`.`id`
-                  $contracttypes
-                  $entrest $idrest $expired
-               GROUP BY
-                  `glpi_contracts`.`id`
-               ORDER BY `glpi_entities`.`completename`,
-                  `glpi_contracts`.`name` ASC,
-                  `glpi_contracts`.`begin_date` DESC";
-        $result = $DB->query($query);
+
+        $iterator = $DB->request($criteria);
 
         $group = '';
         $prev = -1;
         $values = [];
-        while ($data = $DB->fetchAssoc($result)) {
+        foreach ($iterator as $data) {
             if (
                 $p['nochecklimit'] ||
                 ($data['max_links_allowed'] == 0) ||
@@ -586,11 +602,7 @@ class Record_Contract extends CommonDBRelation
         ];
 
         if (!$get_expired) {
-            $query['WHERE'][] = "DATEDIFF(ADDDATE(`glpi_contracts`.`begin_date`,
-                INTERVAL `glpi_contracts`.`duration` MONTH), CURDATE()) > '0' OR
-                `glpi_contracts`.`begin_date` IS NULL OR (`glpi_contracts`.`duration` = 0 AND
-                DATEDIFF(`glpi_contracts`.`begin_date`, CURDATE() ) < '0' ) OR
-                `glpi_contracts`.`renewal` = 1";
+            $query['WHERE'][] = new \QueryExpression("DATEDIFF(ADDDATE(`glpi_contracts`.`begin_date`, INTERVAL `glpi_contracts`.`duration` MONTH), CURDATE()) > 0 OR `glpi_contracts`.`begin_date` IS NULL OR (`glpi_contracts`.`duration` = 0 AND DATEDIFF(`glpi_contracts`.`begin_date`, CURDATE()) < 0) OR `glpi_contracts`.`renewal` = 1");
         }
         return $DB->request($query);
     }

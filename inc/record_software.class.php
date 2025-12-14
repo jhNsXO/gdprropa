@@ -292,11 +292,20 @@ class Record_Software extends CommonDBRelation
         ]);
     }
 
-    public static function getListForItem(CommonDBTM $item): DBmysqlIterator
+    public static function getListForItem(CommonDBTM $item, int $start = 0, int $limit = 0, array $order = []): DBmysqlIterator
     {
         global $DB;
 
         $params = static::getListForItemParams($item, true);
+        if ($start > 0) {
+            $params['START'] = $start;
+        }
+        if ($limit > 0) {
+            $params['LIMIT'] = $limit;
+        }
+        if (!empty($order)) {
+            $params['ORDER'] = $order;
+        }
 
         return $DB->request($params);
     }

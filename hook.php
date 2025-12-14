@@ -61,6 +61,8 @@ function plugin_gdprropa_install()
     }
 
     if ($install) {
+        global $DB;
+        // Remove legacy display preferences handler
         if (!$DB->tableExists('glpi_plugin_gdprropa_configs')) {
             $query = "CREATE TABLE `glpi_plugin_gdprropa_configs` (
                      `id` int(11) NOT NULL auto_increment,
@@ -74,7 +76,7 @@ function plugin_gdprropa_install()
 
                      PRIMARY KEY  (`id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_controllerinfos')) {
@@ -100,7 +102,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `entities_id` (`entities_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_datasubjectscategories')) {
@@ -122,197 +124,104 @@ function plugin_gdprropa_install()
                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
             $DB->doQuery($query);
 
-            $dp = new DisplayPreference();
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\DataSubjectsCategory',
-                'num' => 3,
-                'rank' => 1,
-                'users_id' => 0
-            ]);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_legalbasisacts')) {
-            $query = "CREATE TABLE `glpi_plugin_gdprropa_legalbasisacts` (
-                     `id` int(11) NOT NULL auto_increment,
-                     `name` varchar(255) collate utf8_unicode_ci default NULL,
-                     `type` tinyint(1) NOT NULL default '0',
-                     `content` varchar(1024) collate utf8_unicode_ci default NULL,
-                     `comment` text collate utf8_unicode_ci,
-                     `injected` tinyint(1) NOT NULL default '0' COMMENT 'is record injected ad plugin install',
-                     `entities_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_entities (id)',
-                     `is_recursive` tinyint(1) NOT NULL default '1',
+                        $query = "CREATE TABLE `glpi_plugin_gdprropa_legalbasisacts` (
+                                         `id` int(11) UNSIGNED NOT NULL auto_increment,
+                                         `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                         `type` tinyint(1) NOT NULL DEFAULT '0',
+                                         `content` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                         `comment` text COLLATE utf8mb4_unicode_ci,
+                                         `injected` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'is record injected ad plugin install',
+                                         `entities_id` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'RELATION to glpi_entities (id)',
+                                         `is_recursive` tinyint(1) NOT NULL DEFAULT '1',
 
-                     `date_creation` datetime default NULL,
-                     `users_id_creator` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
-                     `date_mod` datetime default NULL,
-                     `users_id_lastupdater` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
+                                         `date_creation` TIMESTAMP NULL DEFAULT NULL,
+                                         `users_id_creator` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
+                                         `date_mod` TIMESTAMP NULL DEFAULT NULL,
+                                         `users_id_lastupdater` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
 
-                     PRIMARY KEY  (`id`),
-                     KEY `name` (`name`),
-                     UNIQUE `un_per_record` (`name`, `type`, `entities_id`)
-                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
-
-            $dp = new DisplayPreference();
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\LegalBasisAct',
-                'num' => 3,
-                'rank' => 1,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\LegalBasisAct',
-                'num' => 4,
-                'rank' => 2,
-                'users_id' => 0
-            ]);
+                                         PRIMARY KEY  (`id`),
+                                         KEY `name` (`name`),
+                                         UNIQUE `un_per_record` (`name`, `type`, `entities_id`)
+                                     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+                        $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_personaldatacategories')) {
             $query = "CREATE TABLE `glpi_plugin_gdprropa_personaldatacategories` (
-                     `id` int(11) NOT NULL auto_increment,
-                     `name` varchar(255) collate utf8_unicode_ci default NULL,
-                     `completename` text collate utf8_unicode_ci default NULL,
-                     `level` int(11) NOT NULL default '0',
-                     `comment` text collate utf8_unicode_ci,
-                     `plugin_gdprropa_personaldatacategories_id` int(11) NOT NULL default '0',
-                     `entities_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_entities (id)',
-                     `is_recursive` tinyint(1) NOT NULL default '1',
-                     `is_special_category` tinyint(1) default '0',
+                     `id` int(11) UNSIGNED NOT NULL auto_increment,
+                     `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `completename` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `level` int(11) NOT NULL DEFAULT '0',
+                     `comment` text COLLATE utf8mb4_unicode_ci,
+                     `plugin_gdprropa_personaldatacategories_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
+                     `entities_id` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'RELATION to glpi_entities (id)',
+                     `is_recursive` tinyint(1) NOT NULL DEFAULT '1',
+                     `is_special_category` tinyint(1) DEFAULT '0',
 
-                     `date_creation` datetime default NULL,
-                     `users_id_creator` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
-                     `date_mod` datetime default NULL,
-                     `users_id_lastupdater` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
+                     `date_creation` TIMESTAMP NULL DEFAULT NULL,
+                     `users_id_creator` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
+                     `date_mod` TIMESTAMP NULL DEFAULT NULL,
+                     `users_id_lastupdater` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
 
                      PRIMARY KEY  (`id`),
                      KEY `name` (`name`),
                      UNIQUE `un_per_record` (`name`, `entities_id`)
-                  ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
-
-            $dp = new DisplayPreference();
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\PersonalDataCategory',
-                'num' => 3,
-                'rank' => 1,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\PersonalDataCategory',
-                'num' => 4,
-                'rank' => 2,
-                'users_id' => 0
-            ]);
+                  ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_securitymeasures')) {
-            $query = "CREATE TABLE `glpi_plugin_gdprropa_securitymeasures` (
-                     `id` int(11) NOT NULL auto_increment,
-                     `name` varchar(255) collate utf8_unicode_ci default NULL,
-                     `type` tinyint(1) NOT NULL default '0',
-                     `content` varchar(1000) collate utf8_unicode_ci default NULL,
-                     `comment` text collate utf8_unicode_ci,
-                     `entities_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_entities (id)',
-                     `is_recursive` tinyint(1) NOT NULL default '1',
+                        $query = "CREATE TABLE `glpi_plugin_gdprropa_securitymeasures` (
+                                         `id` int(11) UNSIGNED NOT NULL auto_increment,
+                                         `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                         `type` tinyint(1) NOT NULL DEFAULT '0',
+                                         `content` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                                         `comment` text COLLATE utf8mb4_unicode_ci,
+                                         `entities_id` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'RELATION to glpi_entities (id)',
+                                         `is_recursive` tinyint(1) NOT NULL DEFAULT '1',
 
-                     `date_creation` datetime default NULL,
-                     `users_id_creator` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
-                     `date_mod` datetime default NULL,
-                     `users_id_lastupdater` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
+                                         `date_creation` TIMESTAMP NULL DEFAULT NULL,
+                                         `users_id_creator` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
+                                         `date_mod` TIMESTAMP NULL DEFAULT NULL,
+                                         `users_id_lastupdater` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
 
-                     PRIMARY KEY  (`id`),
-                     KEY `name` (`name`),
-                     UNIQUE `un_per_record` (`name`, `type`, `entities_id`)
-                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
-
-            $dp = new DisplayPreference();
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\SecurityMeasure',
-                'num' => 3,
-                'rank' => 1,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\SecurityMeasure',
-                'num' => 4,
-                'rank' => 2,
-                'users_id' => 0
-            ]);
+                                         PRIMARY KEY  (`id`),
+                                         KEY `name` (`name`),
+                                         UNIQUE `un_per_record` (`name`, `type`, `entities_id`)
+                                     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+                        $DB->doQuery($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records')) {
             $query = "CREATE TABLE `glpi_plugin_gdprropa_records` (
-                     `id` int(11) NOT NULL auto_increment,
-                     `entities_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_entities (id)',
-                     `is_recursive` tinyint(1) NOT NULL default '1',
-                     `is_deleted` tinyint(1) NOT NULL default '0',
-                     `name` varchar(255) collate utf8_unicode_ci default NULL,
-                     `content` varchar(1000) collate utf8_unicode_ci default NULL,
-                     `additional_info` varchar(1000) collate utf8_unicode_ci default NULL,
-                     `states_id` int(11) NOT NULL default '1' COMMENT 'RELATION to glpi_states (id)',
-                     `storage_medium` int(11) NOT NULL default '0'  COMMENT 'Default status to UNDEFINED',
-                     `pia_required` tinyint(1) NOT NULL default '0',
-                     `pia_status` int(11) NOT NULL default '0' COMMENT 'Default status to UNDEFINED',
-                     `first_entry_date` datetime default NULL,
-                     `consent_required` tinyint(1) NOT NULL default '0',
-                     `consent_storage` varchar(1000) collate utf8_unicode_ci default NULL,
+                     `id` int(11) UNSIGNED NOT NULL auto_increment,
+                     `entities_id` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'RELATION to glpi_entities (id)',
+                     `is_recursive` tinyint(1) NOT NULL DEFAULT '1',
+                     `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+                     `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `content` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `additional_info` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                     `states_id` int(11) UNSIGNED NOT NULL DEFAULT '1' COMMENT 'RELATION to glpi_states (id)',
+                     `storage_medium` int(11) UNSIGNED NOT NULL DEFAULT '0'  COMMENT 'Default status to UNDEFINED',
+                     `pia_required` tinyint(1) NOT NULL DEFAULT '0',
+                     `pia_status` int(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Default status to UNDEFINED',
+                     `first_entry_date` TIMESTAMP NULL DEFAULT NULL,
+                     `consent_required` tinyint(1) NOT NULL DEFAULT '0',
+                     `consent_storage` varchar(1000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 
-                     `date_creation` datetime default NULL,
-                     `users_id_creator` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
-                     `date_mod` datetime default NULL,
-                     `users_id_lastupdater` int(11) default NULL COMMENT 'RELATION to glpi_users (id)',
+                     `date_creation` TIMESTAMP NULL DEFAULT NULL,
+                     `users_id_creator` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
+                     `date_mod` TIMESTAMP NULL DEFAULT NULL,
+                     `users_id_lastupdater` int(11) UNSIGNED DEFAULT NULL COMMENT 'RELATION to glpi_users (id)',
 
                      PRIMARY KEY  (`id`),
                      KEY `name` (`name`),
                      UNIQUE `un_per_record` (`name`, `entities_id`)
-                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
-
-            $dp = new DisplayPreference();
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 2,
-                'rank' => 1,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 5,
-                'rank' => 2,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 3,
-                'rank' => 3,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 6,
-                'rank' => 4,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 9,
-                'rank' => 5,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 10,
-                'rank' => 6,
-                'users_id' => 0
-            ]);
-            $dp->add([
-                'itemtype' => 'GlpiPlugin\Gdprropa\Record',
-                'num' => 12,
-                'rank' => 7,
-                'users_id' => 0
-            ]);
+                   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_contracts')) {
@@ -325,7 +234,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`, `contracts_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_datasubjectscategories')) {
@@ -339,7 +248,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`, `plugin_gdprropa_datasubjectscategories_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_legalbasisacts')) {
@@ -353,7 +262,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`, `plugin_gdprropa_legalbasisacts_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_personaldatacategories')) {
@@ -366,7 +275,7 @@ function plugin_gdprropa_install()
 
                      PRIMARY KEY  (`id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_retentions')) {
@@ -387,7 +296,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_securitymeasures')) {
@@ -401,7 +310,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`, `plugin_gdprropa_securitymeasures_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
 
         if (!$DB->tableExists('glpi_plugin_gdprropa_records_softwares')) {
@@ -414,7 +323,7 @@ function plugin_gdprropa_install()
                      PRIMARY KEY  (`id`),
                      UNIQUE `un_per_record` (`plugin_gdprropa_records_id`, `softwares_id`)
                    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-            $DB->doQuery($query);
+            $DB->query($query);
         }
     }
 
@@ -446,25 +355,15 @@ function plugin_gdprropa_uninstall()
     ];
 
     foreach ($tables as $table) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
+        $DB->query("DROP TABLE IF EXISTS `$table`;");
     }
 
     $query = "DELETE FROM `glpi_logs`
                WHERE
                      `itemtype` LIKE 'PluginGdprropa%'
                   OR `itemtype_link` LIKE 'PluginGdprropa%'";
-    $DB->doQuery($query);
+    $DB->query($query);
 
-    $dp = new DisplayPreference();
-    $dp->deleteByCriteria([
-        'itemtype' => [
-            'Record',
-            'LegalBasisAct',
-            'SecurityMeasure',
-            'DataSubjectsCategory',
-            'PersonalDataCategory'
-        ]
-    ]);
 
     $profileRight = new ProfileRight();
     foreach (Profile::getAllRights() as $right) {

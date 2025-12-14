@@ -212,36 +212,43 @@ class PersonalDataCategory extends CommonTreeDropdown
             $entities = getAncestorsOf('glpi_entities', $p['entity']);
             array_push($entities, $p['entity']);
 
-            $query = '
-                SELECT
-                   `glpi_plugin_gdprropa_personaldatacategories`.`id`,
-                   `glpi_plugin_gdprropa_personaldatacategories`.`name`,
-                   `glpi_plugin_gdprropa_personaldatacategories`.`entities_id`,
-                   `glpi_entities`.`completename`
-                FROM
-                   `glpi_plugin_gdprropa_personaldatacategories`
-                LEFT JOIN
-                   `glpi_entities` ON (`glpi_plugin_gdprropa_personaldatacategories`.`entities_id`
-                                           = `glpi_entities`.`id`)
-                WHERE
-                   (
-                      (`glpi_plugin_gdprropa_personaldatacategories`.`is_recursive` = 1 AND
-                       `glpi_plugin_gdprropa_personaldatacategories`.`entities_id` IN
-                            (' . implode(",", $entities) . ')
-                      ) OR (
-                       `glpi_plugin_gdprropa_personaldatacategories`.`entities_id` = ' . $p['entity'] . '
-                      )
-                   ) AND (
-                      `glpi_plugin_gdprropa_personaldatacategories`.`level` = 1
-                   )
-                ORDER BY
-                   FIELD(`glpi_plugin_gdprropa_personaldatacategories`.`entities_id`, 4) DESC
-            ';
+            $criteria = [
+                'SELECT' => [
+                    'glpi_plugin_gdprropa_personaldatacategories.id',
+                    'glpi_plugin_gdprropa_personaldatacategories.name',
+                    'glpi_plugin_gdprropa_personaldatacategories.entities_id',
+                    'glpi_entities.completename'
+                ],
+                'FROM' => 'glpi_plugin_gdprropa_personaldatacategories',
+                'LEFT JOIN' => [
+                    'glpi_entities' => [
+                        'ON' => [
+                            'glpi_plugin_gdprropa_personaldatacategories' => 'entities_id',
+                            'glpi_entities' => 'id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'glpi_plugin_gdprropa_personaldatacategories.level' => 1,
+                    'OR' => [
+                        [
+                            'glpi_plugin_gdprropa_personaldatacategories.is_recursive' => 1,
+                            'glpi_plugin_gdprropa_personaldatacategories.entities_id' => $entities
+                        ],
+                        [
+                            'glpi_plugin_gdprropa_personaldatacategories.entities_id' => $p['entity']
+                        ]
+                    ]
+                ],
+                'ORDER' => [
+                    new \QueryExpression('FIELD(`glpi_plugin_gdprropa_personaldatacategories`.`entities_id`, 4) DESC')
+                ]
+            ];
 
-            $result = $DB->request($query);
+            $iterator = $DB->request($criteria);
 
             $cur_name = '';
-            foreach ($result as $item) {
+            foreach ($iterator as $item) {
                 if ($cur_name != $item['completename']) {
                     $cur_name = $item['completename'];
                 }

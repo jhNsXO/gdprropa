@@ -215,40 +215,50 @@ class SecurityMeasure extends CommonDropdown
             $entitiesStr = implode(',', $entities);
 
 
-            $query = '
-                SELECT
-                   `glpi_plugin_gdprropa_securitymeasures`.`id`,
-                   `glpi_plugin_gdprropa_securitymeasures`.`name`,
-                   `glpi_plugin_gdprropa_securitymeasures`.`type`,
-                   `glpi_plugin_gdprropa_securitymeasures`.`entities_id`,
-                   `glpi_entities`.`completename`
-                FROM
-                   `glpi_plugin_gdprropa_securitymeasures`
-                LEFT JOIN
-                   `glpi_entities` ON (`glpi_plugin_gdprropa_securitymeasures`.`entities_id` = `glpi_entities`.`id`)
-                WHERE
-                   (
-                      (`glpi_plugin_gdprropa_securitymeasures`.`is_recursive` = 1 AND
-                       `glpi_plugin_gdprropa_securitymeasures`.`entities_id` IN
-                            (' . $entitiesStr . ')
-                      ) OR (
-                       `glpi_plugin_gdprropa_securitymeasures`.`entities_id` IN (' . $entitiesStr2 . ')
-                      )
-                   )
-                ORDER BY
-                   FIELD(`glpi_plugin_gdprropa_securitymeasures`.`entities_id`, 4) DESC,
-                   `glpi_plugin_gdprropa_securitymeasures`.`type`';
+            $criteria = [
+                'SELECT' => [
+                    'glpi_plugin_gdprropa_securitymeasures.id',
+                    'glpi_plugin_gdprropa_securitymeasures.name',
+                    'glpi_plugin_gdprropa_securitymeasures.type',
+                    'glpi_plugin_gdprropa_securitymeasures.entities_id',
+                    'glpi_entities.completename'
+                ],
+                'FROM' => 'glpi_plugin_gdprropa_securitymeasures',
+                'LEFT JOIN' => [
+                    'glpi_entities' => [
+                        'ON' => [
+                            'glpi_plugin_gdprropa_securitymeasures' => 'entities_id',
+                            'glpi_entities' => 'id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'OR' => [
+                        [
+                            'glpi_plugin_gdprropa_securitymeasures.is_recursive' => 1,
+                            'glpi_plugin_gdprropa_securitymeasures.entities_id' => $entities
+                        ],
+                        [
+                            'glpi_plugin_gdprropa_securitymeasures.entities_id' => $p['entity']
+                        ]
+                    ]
+                ],
+                'ORDER' => [
+                    new \QueryExpression('FIELD(`glpi_plugin_gdprropa_securitymeasures`.`entities_id`, 4) DESC'),
+                    'glpi_plugin_gdprropa_securitymeasures.type'
+                ]
+            ];
 
             $types = self::getAllTypesArray();
 
-            $result = $DB->request($query);
+            $iterator = $DB->request($criteria);
 
             $p['group_by'] = self::DROPDOWN_GROUPBY_TYPE_2;
 
             switch ($p['group_by']) {
                 case self::DROPDOWN_GROUPBY_ENTITY:
                     $cur_name = '';
-                    foreach ($result as $item) {
+                    foreach ($iterator as $item) {
                         if ($cur_name != $item['completename']) {
                             $cur_name = $item['completename'];
                         }
@@ -265,7 +275,7 @@ class SecurityMeasure extends CommonDropdown
                 case self::DROPDOWN_GROUPBY_TYPE:
                 case self::DROPDOWN_GROUPBY_TYPE_2:
                     $cur_type = '';
-                    foreach ($result as $item) {
+                    foreach ($iterator as $item) {
                         if ($cur_type != $item['type']) {
                             $cur_type = $item['type'];
                         }

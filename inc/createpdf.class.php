@@ -523,34 +523,40 @@ class CreatePDF extends CreatePDFBase
             $include_deleted = [0];
         }
 
-        if ($include_recursive) {
-            $include = '
-                (`glpi_plugin_gdprropa_records`.`is_recursive` = 1 AND
-                `glpi_plugin_gdprropa_records`.`entities_id` IN (' . implode(',', $entities) . ')
-                ) OR (
-                `glpi_plugin_gdprropa_records`.`entities_id` = ' . $entity_id . '
-                )
-                ';
-        } else {
-            $include = '`glpi_plugin_gdprropa_records`.`entities_id` IN (' . implode(',', $entities) . ')';
-        }
-        $query = '
-            SELECT
-                `glpi_plugin_gdprropa_records`.*
-            FROM
-                `glpi_plugin_gdprropa_records`
-            LEFT JOIN
-                `glpi_entities` ON (`glpi_plugin_gdprropa_records`.`entities_id` = `glpi_entities`.`id`)
-            WHERE
-                ('
-                . $include .
-                ') AND (
-                    `glpi_plugin_gdprropa_records`.`is_deleted` IN (' . implode(',', $include_deleted) . ')
-                )
-            ORDER BY
-                `glpi_plugin_gdprropa_records`.`name`';
+        $criteria = [
+            'SELECT' => 'glpi_plugin_gdprropa_records.*',
+            'FROM' => 'glpi_plugin_gdprropa_records',
+            'LEFT JOIN' => [
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_plugin_gdprropa_records' => 'entities_id',
+                        'glpi_entities' => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_plugin_gdprropa_records.is_deleted' => $include_deleted
+            ],
+            'ORDER' => 'glpi_plugin_gdprropa_records.name'
+        ];
 
-        return $DB->request($query);
+        if ($include_recursive) {
+            $criteria['WHERE'][] = [
+                'OR' => [
+                    [
+                        'glpi_plugin_gdprropa_records.is_recursive' => 1,
+                        'glpi_plugin_gdprropa_records.entities_id' => $entities
+                    ],
+                    [
+                        'glpi_plugin_gdprropa_records.entities_id' => $entity_id
+                    ]
+                ]
+            ];
+        } else {
+            $criteria['WHERE']['glpi_plugin_gdprropa_records.entities_id'] = $entities;
+        }
+
+        return $DB->request($criteria);
     }
 
     protected function getControllerName(): string
@@ -1484,35 +1490,48 @@ class CreatePDF extends CreatePDFBase
             return;
         }
 
-        $query = '
-            SELECT
-                glpi_softwares.id AS software_id,
-                glpi_softwares.name AS software_name,
-                glpi_softwares.comment AS software_comment,
-                glpi_softwares.entities_id AS software_entities_id,
-                glpi_softwarecategories.name AS software_category_name,
-                glpi_softwarecategories.id AS softwarecategories_id,
-                glpi_softwarecategories.completename AS sotwarecategories_completename,
-                glpi_softwarecategories.comment AS softwarecategories_comment,
-                glpi_manufacturers.id AS manufacturer_id,
-                glpi_manufacturers.name AS manufacturer_name,
-                glpi_manufacturers.comment AS manufacturer_comment
-            FROM
-                glpi_plugin_gdprropa_records_softwares
-            LEFT JOIN
-                glpi_softwares
-                    ON (glpi_plugin_gdprropa_records_softwares.softwares_id = glpi_softwares.id)
-            LEFT JOIN
-                glpi_manufacturers
-                    ON (glpi_softwares.manufacturers_id = glpi_manufacturers.id)
-            LEFT JOIN
-                glpi_softwarecategories
-                    ON (glpi_softwares.softwarecategories_id = glpi_softwarecategories.id)
-            WHERE
-                glpi_plugin_gdprropa_records_softwares.plugin_gdprropa_records_id = ' . $record->fields['id'] . ' AND
-                glpi_softwares.is_deleted = 0
-            ';
-        $software_list = $DB->request($query);
+        $criteria = [
+            'SELECT' => [
+                'glpi_softwares.id AS software_id',
+                'glpi_softwares.name AS software_name',
+                'glpi_softwares.comment AS software_comment',
+                'glpi_softwares.entities_id AS software_entities_id',
+                'glpi_softwarecategories.name AS software_category_name',
+                'glpi_softwarecategories.id AS softwarecategories_id',
+                'glpi_softwarecategories.completename AS sotwarecategories_completename',
+                'glpi_softwarecategories.comment AS softwarecategories_comment',
+                'glpi_manufacturers.id AS manufacturer_id',
+                'glpi_manufacturers.name AS manufacturer_name',
+                'glpi_manufacturers.comment AS manufacturer_comment'
+            ],
+            'FROM' => 'glpi_plugin_gdprropa_records_softwares',
+            'LEFT JOIN' => [
+                'glpi_softwares' => [
+                    'ON' => [
+                        'glpi_plugin_gdprropa_records_softwares' => 'softwares_id',
+                        'glpi_softwares' => 'id'
+                    ]
+                ],
+                'glpi_manufacturers' => [
+                    'ON' => [
+                        'glpi_softwares' => 'manufacturers_id',
+                        'glpi_manufacturers' => 'id'
+                    ]
+                ],
+                'glpi_softwarecategories' => [
+                    'ON' => [
+                        'glpi_softwares' => 'softwarecategories_id',
+                        'glpi_softwarecategories' => 'id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_plugin_gdprropa_records_softwares.plugin_gdprropa_records_id' => $record->fields['id'],
+                'glpi_softwares.is_deleted' => 0
+            ]
+        ];
+
+        $software_list = $DB->request($criteria);
 
         $this->writeInternal('<h2>' . __("Software", 'gdprropa') . '</h2>', [
             'linebefore' => 1

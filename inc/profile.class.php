@@ -264,15 +264,19 @@ class Profile extends GlpiProfile
             }
         }
 
-        $profiles = $DB->request(
-            "SELECT *
-            FROM `glpi_profilerights`
-            WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "'
-            AND `name` LIKE 'plugin_gdprropa_%'"
-        );
+        if (isset($_SESSION['glpiactiveprofile'])) {
+            $profiles = $DB->request([
+                'SELECT' => '*',
+                'FROM' => 'glpi_profilerights',
+                'WHERE' => [
+                    'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
+                    'name' => ['LIKE', 'plugin_gdprropa_%']
+                ]
+            ]);
 
-        foreach ($profiles as $prof) {
-            $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+            foreach ($profiles as $prof) {
+                $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+            }
         }
     }
 }
