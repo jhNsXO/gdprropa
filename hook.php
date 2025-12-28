@@ -85,8 +85,33 @@ function plugin_gdprropa_install()
         }
     }
 
+
     Profile::initProfile();
-    Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+    $profile_id = null;
+    if (
+        isset($_SESSION) &&
+        is_array($_SESSION) &&
+        array_key_exists('glpiactiveprofile', $_SESSION) &&
+        is_array($_SESSION['glpiactiveprofile']) &&
+        array_key_exists('id', $_SESSION['glpiactiveprofile']) &&
+        !empty($_SESSION['glpiactiveprofile']['id'])
+    ) {
+        $profile_id = $_SESSION['glpiactiveprofile']['id'];
+    }
+    if ($profile_id !== null) {
+        Profile::createFirstAccess($profile_id);
+    } else if (
+        isset($_SESSION) &&
+        is_array($_SESSION) &&
+        array_key_exists('glpiname', $_SESSION)
+    ) {
+        if (class_exists('Toolbox')) {
+            Toolbox::logInFile('gdprropa', sprintf(
+                'WARNING [%s:%s] glpiactiveprofile not set or invalid during install, user=%s',
+                __FILE__, __FUNCTION__, $_SESSION['glpiname']
+            ));
+        }
+    }
 
     return true;
 }
