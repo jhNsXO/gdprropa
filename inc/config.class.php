@@ -54,7 +54,7 @@ class Config extends CommonDBTM
     public const PLUGIN_VERSION = '1.0.2';
 
     public const PLUGIN_MIN_GLPI_VERSION = '10.0.0';
-    public const PLUGIN_MAX_GLPI_VERSION = '10.99.99';
+    public const PLUGIN_MAX_GLPI_VERSION = '12.0.0';
 
     public static $rightname = 'plugin_gdprropa_record';
 
@@ -220,7 +220,7 @@ class Config extends CommonDBTM
 
         echo "<tr>";
         echo "<td>" . __(
-                "Remove sofrware when record storage medium set to " .
+                "Remove software when record storage medium set to " .
                 "Paper only if any was assigned previously",
                 'gdprropa'
             ) . "</td>";

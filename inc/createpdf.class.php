@@ -74,17 +74,17 @@ class CreatePDF extends CreatePDFBase
     protected static array $default_print_options = [
         'show_representative' => [
             'show' => 1,
-            'show_title' => 1,
-            'show_address' => 1,
-            'show_phone' => 1,
-            'show_email' => 1,
+            'show_title' => 0,
+            'show_address' => 0,
+            'show_phone' => 0,
+            'show_email' => 0,
         ],
         'show_dpo' => [
             'show' => 1,
-            'show_title' => 1,
-            'show_address' => 1,
-            'show_phone' => 1,
-            'show_email' => 1,
+            'show_title' => 0,
+            'show_address' => 0,
+            'show_phone' => 0,
+            'show_email' => 0,
         ],
         'page_orientation' => 'P',
         'show_inherited_from' => false,
@@ -818,6 +818,8 @@ class CreatePDF extends CreatePDFBase
 
         $this->printDataSubjectsCategories($record);
 
+        $this->printRecipientsCategories($record);
+
         $this->printDataRetention($record);
 
         $this->printPersonalDataCategories($record);
@@ -1093,6 +1095,83 @@ class CreatePDF extends CreatePDFBase
                 if ($this->print_options['show_comments']) {
                     $tbl .=
                         '<td width="' . $cols_width[2] . '%">' . nl2br($dsc->fields['comment'] ?? '') . '</td>';
+                }
+                $tbl .=
+                    '</tr>';
+            }
+
+            $tbl .= '</tbody></table>';
+
+            $this->pdf->SetTextColor(0, 0, 0);
+            $this->pdf->writeHTML($tbl, true, false, false, true);
+        }
+
+        $this->insertNewPageIfBottomSpaceLeft();
+    }
+
+    protected function printRecipientsCategories(Record $record): void
+    {
+        $recipients = (new Record_RecipientsCategory())
+            ->find([Record::getForeignKeyField() => $record->fields['id']]);
+
+        $this->writeInternal(
+            '<h2>' . RecipientsCategory::getTypeName(3) . '</h2>',
+            ['linebefore' => 1]
+        );
+
+        if (!count($recipients)) {
+            $this->writeInternal(__("No recipients category/ies assigned.", 'gdprropa'), [
+                'border' => 1,
+                'linebefore' => 1
+            ]);
+        } else {
+            if ($this->print_options['show_inherited_from']) {
+                if ($this->print_options['show_comments']) {
+                    $cols_width = ['35', '35', '30'];
+                } else {
+                    $cols_width = ['50', '50', '0'];
+                }
+            } else {
+                if ($this->print_options['show_comments']) {
+                    $cols_width = ['50', '30', '20'];
+                } else {
+                    $cols_width = ['80', '20', '0'];
+                }
+            }
+
+            $tbl = '<table border="1" cellpadding="3" cellspacing="0">' .
+                '<thead><tr>' .
+                '<th width="' . $cols_width[0] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                __("Name") . '</h4></th>';
+            if ($this->print_options['show_inherited_from']) {
+                $tbl .=
+                    '<th width="' . $cols_width[1] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                    __("Introduced in", 'gdprropa') . '</h4></th>';
+            }
+            if ($this->print_options['show_comments']) {
+                $tbl .=
+                    '<th width="' . $cols_width[2] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                    __("Comment") . '</h4></th>';
+            }
+            $tbl .=
+                '</tr></thead>' .
+                '<tbody>';
+
+            foreach ($recipients as $item) {
+                $rc = new RecipientsCategory();
+                $rc->getFromDB($item['plugin_gdprropa_recipientscategories_id']);
+
+                $tbl .=
+                    '<tr>' .
+                    '<td width="' . $cols_width[0] . '%">' . $rc->fields['name'] . '</td>';
+                if ($this->print_options['show_inherited_from']) {
+                    $tbl .=
+                        '<td width="' . $cols_width[1] . '%">' .
+                        Dropdown::getDropdownName(Entity::getTable(), $rc->fields['entities_id']) . '</td>';
+                }
+                if ($this->print_options['show_comments']) {
+                    $tbl .=
+                        '<td width="' . $cols_width[2] . '%">' . nl2br($rc->fields['comment'] ?? '') . '</td>';
                 }
                 $tbl .=
                     '</tr>';

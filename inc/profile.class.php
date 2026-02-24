@@ -147,6 +147,7 @@ class Profile extends GlpiProfile
                 'plugin_gdprropa_legalbasisact' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_securitymeasure' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_datasubjectscategory' => CREATE | READ | UPDATE | DELETE | PURGE,
+                'plugin_gdprropa_recipientscategory' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_controllerinfo' => CREATE | READ | UPDATE,
                 'plugin_gdprropa_personaldatacategory' => CREATE | READ | UPDATE | DELETE | PURGE | READNOTE |
                     UPDATENOTE,
@@ -201,6 +202,18 @@ class Profile extends GlpiProfile
                 'itemtype' => DataSubjectsCategory::class,
                 'label' => DataSubjectsCategory::getTypeName(2),
                 'field' => DataSubjectsCategory::$rightname,
+                'rights' => [
+                    CREATE => __("Create"),
+                    READ => __("Read"),
+                    UPDATE => __("Update"),
+                    DELETE => __("Delete"),
+                    PURGE => __("Delete permanently"),
+                ]
+            ],
+            [
+                'itemtype' => RecipientsCategory::class,
+                'label' => RecipientsCategory::getTypeName(2),
+                'field' => RecipientsCategory::$rightname,
                 'rights' => [
                     CREATE => __("Create"),
                     READ => __("Read"),

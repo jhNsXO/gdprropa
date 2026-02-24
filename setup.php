@@ -48,12 +48,12 @@ use GlpiPlugin\Gdprropa\Menu;
 
 // TODO try to move this to Config class and use it from there, atm GLPI (tested on 10.0.11) can't find
 //      specific class when using namespaces
-define('GDPRROPA_PLUGIN_VERSION', '1.0.3');
+define('GDPRROPA_PLUGIN_VERSION', '1.0.4');
 
 // Minimal GLPI version, inclusive
 define('GDPRROPA_PLUGIN_MIN_GLPI_VERSION', '10.0.0');
 // Maximum GLPI version, exclusive
-define('GDPRROPA_PLUGIN_MAX_GLPI_VERSION', '12.0');
+define('GDPRROPA_PLUGIN_MAX_GLPI_VERSION', '12.0.0');
 
 function plugin_init_gdprropa()
 {
@@ -113,20 +113,12 @@ function plugin_gdprropa_check_prerequisites()
     $min_version = defined('GDPRROPA_PLUGIN_MIN_GLPI_VERSION') ? GDPRROPA_PLUGIN_MIN_GLPI_VERSION : '10.0.0';
     $max_version = defined('GDPRROPA_PLUGIN_MAX_GLPI_VERSION') ? GDPRROPA_PLUGIN_MAX_GLPI_VERSION : '12.0';
     $glpi_version = null;
-    $glpi_root = '/var/www/glpi';
-    $version_dir = $glpi_root . '/version';
-    if (is_dir($version_dir)) {
-        $files = scandir($version_dir, SCANDIR_SORT_DESCENDING);
-        foreach ($files as $file) {
-            if ($file[0] !== '.' && preg_match('/^\d+\.\d+\.\d+$/', $file)) {
-                $glpi_version = $file;
-                break;
-            }
-        }
-    }
-    if ($glpi_version === null && defined('GLPI_VERSION')) {
+
+    // Try to detect GLPI version
+    if (defined('GLPI_VERSION')) {
         $glpi_version = GLPI_VERSION;
     }
+    
     // Load Toolbox if not loaded
     if (!class_exists('Toolbox') && file_exists($glpi_root . '/src/Toolbox.php')) {
         require_once $glpi_root . '/src/Toolbox.php';

@@ -292,7 +292,7 @@ msgstr ""
 
 #: inc/config.class.php:223
 msgid ""
-"Remove sofrware when record storage medium set to Paper only if any was "
+"Remove software when record storage medium set to Paper only if any was "
 "assigned previously"
 msgstr ""
 
@@ -882,6 +882,10 @@ msgstr ""
 msgid "No data subjects category/ies assigned."
 msgstr ""
 
+#: inc/createpdf.class.php:1040
+msgid "No recipients category/ies assigned."
+msgstr ""
+
 #: inc/createpdf.class.php:1114
 msgid "Data retention not set."
 msgstr ""
@@ -991,4 +995,24 @@ msgstr ""
 
 #: inc/menu.class.php:60
 msgid "Create PDF for all records within active entity and its sons"
+msgstr ""
+
+#: inc/recipientscategory.class.php:62
+msgid "Category of recipients"
+msgid_plural "Categories of recipients"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/record_recipientscategory.class.php:62
+msgid "Category of recipients"
+msgid_plural "Categories of recipients"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/record_recipientscategory.class.php:121
+msgid "Add Category of Recipients"
+msgstr ""
+
+#: inc/record_recipientscategory.class.php:123
+msgid "GDPR Article 30 1d"
 msgstr ""

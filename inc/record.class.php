@@ -209,6 +209,7 @@ class Record extends CommonDBTM
             ->addDefaultFormTab($ong)
             ->addStandardTab(__CLASS__, $ong, $options)
             ->addStandardTab(Record_DataSubjectsCategory::class, $ong, $options)
+            ->addStandardTab(Record_RecipientsCategory::class, $ong, $options)
             ->addStandardTab(Record_LegalBasisAct::class, $ong, $options)
             ->addStandardTab(Record_Retention::class, $ong, $options)
             ->addStandardTab(Record_Contract::class, $ong, $options)
@@ -228,6 +229,7 @@ class Record extends CommonDBTM
         $this->deleteChildrenAndRelationsFromDb([
             Record_Contract::class,
             Record_DataSubjectsCategory::class,
+            Record_RecipientsCategory::class,
             Record_LegalBasisAct::class,
             Record_PersonalDataCategory::class,
             Record_Retention::class,
@@ -494,6 +496,11 @@ class Record extends CommonDBTM
         $tab = array_merge(
             $tab,
             Record_DataSubjectsCategory::rawSearchOptionsToAdd()
+        );
+
+        $tab = array_merge(
+            $tab,
+            Record_RecipientsCategory::rawSearchOptionsToAdd()
         );
 
         $tab = array_merge(

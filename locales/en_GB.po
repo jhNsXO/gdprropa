@@ -8,21 +8,21 @@ msgstr ""
 "Project-Id-Version: GDPRROPA 1.0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-07-15 23:50+0200\n"
-"PO-Revision-Date: 2020-06-04 07:44-0400\n"
-"Last-Translator:  Yild\n"
+"PO-Revision-Date: 2026-02-24 11:41+0100\n"
+"Last-Translator: Yild\n"
 "Language-Team: English\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.8\n"
 
 #: setup.php:96 inc/record.class.php:86 inc/createpdf.class.php:622
 msgid "GDPR Record of Processing Activities"
 msgstr "GDPR Records of Processing Activities"
 
 #: inc/createpdfbase.class.php:63
-#, fuzzy
 msgid "Create PDF"
 msgstr "Create PDF"
 
@@ -213,7 +213,7 @@ msgstr "GDPR Controller Info"
 
 #: inc/controllerinfo.class.php:128 inc/createpdf.class.php:564
 msgid "Controller information not set."
-msgstr "Controller information not set"
+msgstr "Controller information not set."
 
 #: inc/controllerinfo.class.php:134
 msgid "Manage entity Controller information"
@@ -293,12 +293,11 @@ msgid "Limit retention contracts list to those selected in controller info"
 msgstr "Limit retention contracts list to those selected in controller info"
 
 #: inc/config.class.php:223
-#, fuzzy
 msgid ""
-"Remove sofrware when record storage medium set to Paper only if any was "
+"Remove software when record storage medium set to Paper only if any was "
 "assigned previously"
 msgstr ""
-"Remove sofrware when record storage medium set to Paper only if any was "
+"Remove software when record storage medium set to Paper only if any was "
 "assigned previously"
 
 #: inc/config.class.php:237
@@ -310,13 +309,12 @@ msgid "Allow add software from any entity"
 msgstr "Allow add software from any entity"
 
 #: inc/config.class.php:260
-#, fuzzy
 msgid ""
 "Allow retrieve controller info from ancestor entity (set as recursive) when "
 "current entity controller info is not set"
 msgstr ""
-"Allow retrieve controller info from ancestor entity (set as recursive) when "
-"current entity controller info is not set"
+"Allow retrieving controller info from ancestor entity (set as recursive) "
+"when current entity controller info is not set"
 
 #: inc/config.class.php:274
 msgid "PDF creating configuration"
@@ -607,7 +605,6 @@ msgid "Employee personal ID"
 msgstr "Employee personal ID"
 
 #: inc/record.class.php:97
-#, fuzzy
 msgid "Processing activity"
 msgstr "Processing Activity information"
 
@@ -725,7 +722,6 @@ msgid "Name (select from list)"
 msgstr "Name (select from list)"
 
 #: inc/record_software.class.php:89 inc/createpdf.class.php:1517
-#, fuzzy
 msgid "Software"
 msgstr "Software"
 
@@ -762,7 +758,6 @@ msgid "Show full personal data category list"
 msgstr "Show full personal data category list"
 
 #: inc/createpdf.class.php:198
-#, fuzzy
 msgid "Show expired contracts"
 msgstr "Other contract"
 
@@ -819,12 +814,10 @@ msgid "Show DPO"
 msgstr "Show DPO"
 
 #: inc/createpdf.class.php:389
-#, fuzzy
 msgid "Controller name not set."
 msgstr "Controller info not set."
 
 #: inc/createpdf.class.php:429
-#, fuzzy
 msgid "Controller"
 msgstr "Controller Name"
 
@@ -855,7 +848,6 @@ msgid "Description of the activity"
 msgstr "Description of the activity"
 
 #: inc/createpdf.class.php:693
-#, fuzzy
 msgid "Record of Processing Activities"
 msgstr "GDPR Records of Processing Activities"
 
@@ -913,6 +905,10 @@ msgstr "Content"
 #: inc/createpdf.class.php:1038
 msgid "No data subjects category/ies assigned."
 msgstr "No data subjects category/ies assigned."
+
+#: inc/createpdf.class.php:1040
+msgid "No recipients category/ies assigned."
+msgstr "No recipients category/ies assigned."
 
 #: inc/createpdf.class.php:1114
 msgid "Data retention not set."
@@ -1024,6 +1020,20 @@ msgstr "IT"
 #: inc/menu.class.php:60
 msgid "Create PDF for all records within active entity and its sons"
 msgstr "Create PDF for all records within active entity and its sons"
+
+#: inc/record_recipientscategory.class.php:62
+msgid "Category of recipients"
+msgid_plural "Categories of recipients"
+msgstr[0] "Category of recipients"
+msgstr[1] "Category of recipients"
+
+#: inc/record_recipientscategory.class.php:121
+msgid "Add Category of Recipients"
+msgstr "Add Category of Recipients"
+
+#: inc/record_recipientscategory.class.php:123
+msgid "GDPR Article 30 1d"
+msgstr "GDPR Article 30 1d"
 
 #~ msgid "GDPR Records of Processing Activities"
 #~ msgstr "GDPR Records of Processing Activities"

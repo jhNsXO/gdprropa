@@ -234,11 +234,12 @@ function plugin_gdprropa_getDatabaseRelations()
 
     if ($plugin->isActivated('gdprropa')) {
         return [
-            'glpi_entites' => [
+            'glpi_entities' => [
                 'glpi_plugin_gdprropa_configs' => 'entities_id',
                 'glpi_plugin_gdprropa_records' => 'entities_id',
                 'glpi_plugin_gdprropa_controllerinfos' => 'entities_id',
                 'glpi_plugin_gdprropa_datasubjectscategories' => 'entities_id',
+                'glpi_plugin_gdprropa_recipientscategories' => 'entities_id',
                 'glpi_plugin_gdprropa_legalbasisacts' => 'entities_id',
                 'glpi_plugin_gdprropa_personaldatacategories' => 'entities_id',
                 'glpi_plugin_gdprropa_securitymeasures' => 'entities_id',
@@ -254,6 +255,10 @@ function plugin_gdprropa_getDatabaseRelations()
                     'users_id_lastupdater',
                 ],
                 'glpi_plugin_gdprropa_datasubjectscategories' => [
+                    'users_id_creator',
+                    'users_id_lastupdater',
+                ],
+                'glpi_plugin_gdprropa_recipientscategories' => [
                     'users_id_creator',
                     'users_id_lastupdater',
                 ],
