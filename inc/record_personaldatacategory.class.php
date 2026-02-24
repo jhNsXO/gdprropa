@@ -253,33 +253,37 @@ class Record_PersonalDataCategory extends CommonDBRelation
         );
         array_shift($sons);
 
-        $pdc = $DB->query(
-            'SELECT `plugin_gdprropa_personaldatacategories_id` FROM `' .
-            $this->getTable() . '` WHERE `plugin_gdprropa_records_id` = ' . $data['plugin_gdprropa_records_id'] . ' '
-        );
-        while ($item = $DB->fetch_assoc($pdc)) {
-            if (
-                $data['plugin_gdprropa_personaldatacategories_id'] == $item['plugin_gdprropa_personaldatacategories_id']
-            ) {
+        // Query builder instead of raw SQL
+        $pdc = $DB->request([
+            'SELECT' => 'plugin_gdprropa_personaldatacategories_id',
+            'FROM'   => $this->getTable(),
+            'WHERE'  => [
+                'plugin_gdprropa_records_id' => $data['plugin_gdprropa_records_id']
+            ]
+        ]);
+        foreach ($pdc as $item) {
+            $currentId = $item['plugin_gdprropa_personaldatacategories_id'];
+
+            if ($data['plugin_gdprropa_personaldatacategories_id'] == $currentId) {
                 $result = 1;
                 $msg = __('Selected item is already on list.', 'gdprropa');
                 break;
-            } else {
-                if (in_array($item['plugin_gdprropa_personaldatacategories_id'], $ancestors)) {
-                    $result = 2;
-                    $msg = __('Cannot add child item if parent is already on the list.', 'gdprropa');
-                    break;
-                } else {
-                    if (count($sons) && in_array($item['plugin_gdprropa_personaldatacategories_id'], $sons)) {
-                        $result = 3;
-                        $msg = __(
-                            'Cannot add Parent item if child is already on the list.' .
-                            '<br>Remove child items before adding parent.',
-                            'gdprropa'
-                        );
-                        break;
-                    }
-                }
+            }
+
+            if (in_array($currentId, $ancestors, true)) {
+                $result = 2;
+                $msg = __('Cannot add child item if parent is already on the list.', 'gdprropa');
+                break;
+            }
+
+            if (count($sons) && in_array($currentId, $sons, true)) {
+                $result = 3;
+                $msg = __(
+                    'Cannot add Parent item if child is already on the list.' .
+                    '<br>Remove child items before adding parent.',
+                    'gdprropa'
+                );
+                break;
             }
         }
 
