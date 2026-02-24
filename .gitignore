@@ -3,3 +3,4 @@
 .settings/*
 .prepare_language_files.sh
 .locales/messages.pot
+.vs/*
