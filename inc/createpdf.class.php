@@ -32,7 +32,7 @@ Based on DPO Register plugin, by Karhel Tmarr.
 --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -605,10 +605,14 @@ class CreatePDF extends CreatePDFBase
 
         $this->setEntityAndControllerInfo($entities_id);
 
+        if ($record instanceof DBmysqlIterator) {
+            $record = iterator_to_array($record);
+        }
+
         $this->printHeader();
         $this->printCoverPage($generator_options['report_type'], $record, $entities_id);
 
-        if ($record instanceof DBmysqlIterator) {
+        if (is_array($record)) {
             foreach ($record as $item) {
                 $rec = new Record();
                 $rec->getFromDB($item['id']);

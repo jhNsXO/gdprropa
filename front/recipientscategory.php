@@ -32,12 +32,12 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
-  @copyright Copyright © 2020-2025 by Yild
+  @author    mj
+  @copyright Copyright © 2026 by mj
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
-  @link      https://github.com/yild/gdprropa
-  @since     1.0.0
+  @link      https://github.com/jhnsxo/gdprropa
+  @since     1.0.4
  --------------------------------------------------------------------------
  */
 
@@ -47,4 +47,4 @@ include("../../../inc/includes.php");
 
 $dropdown = new RecipientsCategory();
 
-include(GLPI_ROOT . "/front/dropdown.common.form.php");
+include(GLPI_ROOT . "/front/dropdown.common.php");

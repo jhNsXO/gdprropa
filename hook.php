@@ -32,7 +32,7 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -50,67 +50,30 @@ use GlpiPlugin\Gdprropa\Menu;
 use GlpiPlugin\Gdprropa\PersonalDataCategory;
 use GlpiPlugin\Gdprropa\Profile;
 use GlpiPlugin\Gdprropa\SecurityMeasure;
+use GlpiPlugin\Gdprropa\RecipientsCategory;
+
+use Glpi\Plugin\Hooks;
 
 function plugin_gdprropa_install()
 {
     global $DB;
 
-    $install = false;
-    if (!$DB->tableExists('glpi_plugin_gdprropa_records')) {
-        $install = true;
-    }
-
-    if ($install) {
-        if (class_exists('Migration')) {
-            $migration = new Migration('plugin_gdprropa_install');
-            $sqlFiles = [
-                'install-1.0.0.sql',
-                // Add more migration files here if needed
-            ];
-            foreach ($sqlFiles as $sqlFile) {
-                $sqlPath = __DIR__ . '/sql/' . $sqlFile;
-                if (file_exists($sqlPath)) {
-                    $migration->displayMessage("Running migration: $sqlFile");
-                    $migration->executeMigration($sqlPath);
-                }
-            }
+    // 1. Run the schema file for table creation
+    $sql_file = GLPI_ROOT . '/plugins/gdprropa/install/mysql/install.sql';
+    
+    // Check if a primary table exists to avoid running the file multiple times
+    if (!$DB->tableExists('glpi_plugin_gdprropa_configs')) {
+        if (file_exists($sql_file)) {
+            $DB->runFile($sql_file);
         } else {
-            if (class_exists('Toolbox')) {
-                Toolbox::logInFile('gdprropa', sprintf(
-                    'ERROR [%s:%s] Migration class not found during install, user=%s',
-                    __FILE__, __FUNCTION__, $_SESSION['glpiname'] ?? 'unknown'
-                ));
-            }
-            return false;
+            return false; // Failsafe if the SQL file is missing
         }
     }
 
-
-    Profile::initProfile();
-    $profile_id = null;
-    if (
-        isset($_SESSION) &&
-        is_array($_SESSION) &&
-        array_key_exists('glpiactiveprofile', $_SESSION) &&
-        is_array($_SESSION['glpiactiveprofile']) &&
-        array_key_exists('id', $_SESSION['glpiactiveprofile']) &&
-        !empty($_SESSION['glpiactiveprofile']['id'])
-    ) {
-        $profile_id = $_SESSION['glpiactiveprofile']['id'];
-    }
-    if ($profile_id !== null) {
-        Profile::createFirstAccess($profile_id);
-    } else if (
-        isset($_SESSION) &&
-        is_array($_SESSION) &&
-        array_key_exists('glpiname', $_SESSION)
-    ) {
-        if (class_exists('Toolbox')) {
-            Toolbox::logInFile('gdprropa', sprintf(
-                'WARNING [%s:%s] glpiactiveprofile not set or invalid during install, user=%s',
-                __FILE__, __FUNCTION__, $_SESSION['glpiname']
-            ));
-        }
+    // 2. Initialize Profiles
+    if (class_exists('GlpiPlugin\Gdprropa\Profile')) {
+        GlpiPlugin\Gdprropa\Profile::initProfile();
+        GlpiPlugin\Gdprropa\Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
     }
 
     return true;
@@ -126,6 +89,7 @@ function plugin_gdprropa_uninstall()
         'glpi_plugin_gdprropa_controllerinfos',
         'glpi_plugin_gdprropa_datasubjectscategories',
         'glpi_plugin_gdprropa_legalbasisacts',
+        'glpi_plugin_gdprropa_recipientscategories',
         'glpi_plugin_gdprropa_personaldatacategories',
         'glpi_plugin_gdprropa_securitymeasures',
         'glpi_plugin_gdprropa_records',
@@ -133,78 +97,58 @@ function plugin_gdprropa_uninstall()
         'glpi_plugin_gdprropa_records_retentions',
         'glpi_plugin_gdprropa_records_datasubjectscategories',
         'glpi_plugin_gdprropa_records_legalbasisacts',
+        'glpi_plugin_gdprropa_records_recipientscategories',
         'glpi_plugin_gdprropa_records_personaldatacategories',
         'glpi_plugin_gdprropa_records_securitymeasures',
         'glpi_plugin_gdprropa_records_softwares',
     ];
-    try {
-        if (class_exists('Migration')) {
-            $migration = new Migration('plugin_gdprropa_uninstall');
-            foreach ($tables as $table) {
-                if ($DB->tableExists($table)) {
-                    $migration->dropTable($table);
-                }
-            }
-            if (method_exists($migration, 'executeMigration')) {
-                $migration->executeMigration();
-            }
-        } else {
-            foreach ($tables as $table) {
-                if ($DB->tableExists($table)) {
-                    $DB->queryOrDie("DROP TABLE IF EXISTS `$table`;");
-                }
-            }
+    
+    // 1. Drop tables using the native GLPI method
+    foreach ($tables as $table) {
+        if ($DB->tableExists($table)) {
+            $DB->dropTable($table);
         }
-    } catch (Exception $e) {
-        if (class_exists('Toolbox')) {
-            Toolbox::logInFile('gdprropa', sprintf(
-                'ERROR [%s:%s] Failed to drop tables: %s, user=%s',
-                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
-            ));
-        }
-        $result = false;
     }
 
-    // Purge the logs table of the entries about the current class
-    try {
-        if ($DB->tableExists('glpi_logs')) {
-            $query = "DELETE FROM `glpi_logs` WHERE `itemtype` LIKE 'PluginGdprropa%' OR `itemtype_link` LIKE 'PluginGdprropa%'";
-            $DB->query($query);
-        }
-    } catch (Exception $e) {
-        if (class_exists('Toolbox')) {
-            Toolbox::logInFile('gdprropa', sprintf(
-                'ERROR [%s:%s] Failed to purge logs: %s, user=%s',
-                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
-            ));
-        }
-        $result = false;
+    // 2. Delete logs using the GLPI Query Builder
+    $DB->delete(
+        'glpi_logs',
+        [
+            'OR' => [
+                'itemtype'      => ['LIKE', 'PluginGdprropa%'],
+                'itemtype_link' => ['LIKE', 'PluginGdprropa%']
+            ]
+        ]
+    );
+
+    // 3. Delete Display Preferences
+    if (class_exists('DisplayPreference')) {
+        $dp = new DisplayPreference();
+        $dp->deleteByCriteria([
+            'itemtype' => [
+                'Record',
+                'LegalBasisAct',
+                'SecurityMeasure',
+                'DataSubjectsCategory',
+                'PersonalDataCategory'
+            ]
+        ]);
     }
 
-    try {
+    // 4. Remove Profile Rights
+    if (class_exists('ProfileRight') && class_exists('GlpiPlugin\Gdprropa\Profile')) {
         $profileRight = new ProfileRight();
-        foreach (Profile::getAllRights() as $right) {
+        foreach (GlpiPlugin\Gdprropa\Profile::getAllRights() as $right) {
             $profileRight->deleteByCriteria(['name' => $right['field']]);
         }
-        Menu::removeRightsFromSession();
-        Profile::removeRightsFromSession();
-    } catch (Exception $e) {
-        if (class_exists('Toolbox')) {
-            Toolbox::logInFile('gdprropa', sprintf(
-                'ERROR [%s:%s] Failed to cleanup profile rights: %s, user=%s',
-                __FILE__, __FUNCTION__, $e->getMessage(), $_SESSION['glpiname'] ?? 'unknown'
-            ));
-        }
-        $result = false;
+        GlpiPlugin\Gdprropa\Profile::removeRightsFromSession();
     }
 
-    if (class_exists('Toolbox')) {
-        Toolbox::logInFile('gdprropa', sprintf(
-            'UNINSTALL [%s:%s] Tables uninstall attempted, result=%s, user=%s',
-            __FILE__, __FUNCTION__, $result ? 'success' : 'failure', $_SESSION['glpiname'] ?? 'unknown'
-        ));
+    if (class_exists('GlpiPlugin\Gdprropa\Menu')) {
+        GlpiPlugin\Gdprropa\Menu::removeRightsFromSession();
     }
-    return $result;
+
+    return true;
 }
 
 function plugin_gdprropa_getDropdown()
@@ -214,6 +158,7 @@ function plugin_gdprropa_getDropdown()
         SecurityMeasure::class => SecurityMeasure::getTypeName(2),
         DataSubjectsCategory::class => DataSubjectsCategory::getTypeName(2),
         PersonalDataCategory::class => PersonalDataCategory::getTypeName(2),
+        RecipientsCategory::class => RecipientsCategory::getTypeName(2),
     ];
 }
 

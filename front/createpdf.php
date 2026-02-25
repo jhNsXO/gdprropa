@@ -32,7 +32,7 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -47,7 +47,9 @@ use Html;
 use Plugin;
 use Session;
 
-include("../../../inc/includes.php");
+if (!defined('GLPI_ROOT')) {
+    include("../../../inc/includes.php");
+}
 
 Plugin::load('gdprropa', true);
 

@@ -32,7 +32,7 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -95,7 +95,7 @@ function plugin_version_gdprropa()
     return [
         'name' => __('GDPR Record of Processing Activities', 'gdprropa'),
         'version' => GDPRROPA_PLUGIN_VERSION,
-        'author' => "<a href='https://github.com/yild/'>Yild</a>",
+        'author' => "<a href='https://github.com/yild/'>Yild, mj</a>",
         'license' => 'GPLv3',
         'homepage' => 'https://github.com/yild/gdprropa',
         'requirements' => [

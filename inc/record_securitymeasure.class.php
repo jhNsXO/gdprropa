@@ -32,7 +32,7 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -258,7 +258,7 @@ class Record_SecurityMeasure extends CommonDBRelation
         ];
 
         $tab[] = [
-            'id' => '51',
+            'id' => '61',
             'table' => SecurityMeasure::getTable(),
             'field' => 'name',
             'name' => __("Name"),

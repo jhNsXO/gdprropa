@@ -32,12 +32,12 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
-  @copyright Copyright © 2020-2025 by Yild
+  @author    mj
+  @copyright Copyright © 2026 by mj
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
-  @link      https://github.com/yild/gdprropa
-  @since     1.0.0
+  @link      https://github.com/jhnsxo/gdprropa
+  @since     1.0.4
  --------------------------------------------------------------------------
  */
 
@@ -161,9 +161,9 @@ class Record_RecipientsCategory extends CommonDBRelation
 
             echo $header_begin . $header_top . $header_bottom . $header_end;
 
-            foreach ($iterator as $data) {
+            foreach ($items_list as $data) {
                 $rc = new RecipientsCategory();
-                $rc->getFromDB($data['plugin_gdprropa_recipientscategories_id']);
+                $rc->fields = $data;
 
                 echo "<tr class='tab_bg_1'>";
 
@@ -174,8 +174,8 @@ class Record_RecipientsCategory extends CommonDBRelation
                 }
 
                 echo "<td>" . $rc->getLink() . "</td>";
-                echo "<td>" . Dropdown::getDropdownName(Entity::getTable(), $rc->fields['entities_id']) . "</td>";
-                echo "<td>" . nl2br($rc->fields['comment']) . "</td>";
+                echo "<td>" . Dropdown::getDropdownName(Entity::getTable(), $data['entities_id']) . "</td>";
+                echo "<td>" . nl2br($data['comment']) . "</td>";
                 echo "<td>" . Html::convDate($data['date_creation']) . "</td>";
 
                 echo "</tr>";

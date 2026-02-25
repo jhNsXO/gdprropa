@@ -32,7 +32,7 @@
  --------------------------------------------------------------------------
 
   @package   gdprropa
-  @author    Yild
+  @author    Yild, mj
   @copyright Copyright © 2020-2025 by Yild
   @license   GPLv3+
              https://www.gnu.org/licenses/gpl.txt
@@ -50,6 +50,8 @@ use Session;
 class PersonalDataCategory extends CommonTreeDropdown
 {
     public static $rightname = 'plugin_gdprropa_personaldatacategory';
+
+    public $parent_field = 'plugin_gdprropa_personaldatacategories_id';
 
     // TODO check description in Record class
     protected static $showTitleInNavigationHeader = true;

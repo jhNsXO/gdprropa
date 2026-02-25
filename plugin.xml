@@ -54,16 +54,16 @@
    <issues>https://github.com/yild/gdprropa/issues</issues>
    <readme>https://github.com/yild/gdprropa/blob/master/README.md</readme>
    <authors>
-      <author>Yild</author>
+      <author>Yild, mj</author>
    </authors>
    <versions>
       <version>
          <num>1.0.4</num>
-         <compatibility>11.0</compatibility>
+         <compatibility>11.0.*</compatibility>
       </version>
       <version>
          <num>1.0.3</num>
-         <compatibility>10.0</compatibility>
+         <compatibility>10.*</compatibility>
       </version>
    </versions>
    <langs>
