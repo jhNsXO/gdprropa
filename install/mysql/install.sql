@@ -130,8 +130,24 @@
         UNIQUE `un_per_record` (`name`, `entities_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
+-- 8. Purposes
+    CREATE TABLE `glpi_plugin_gdprropa_purposes` (
+        `id` int unsigned NOT NULL auto_increment,
+        `name` varchar(255) default NULL,
+        `comment` text,
+        `entities_id` int unsigned NOT NULL default '0',
+        `is_recursive` tinyint NOT NULL default '1',
+        `date_creation` datetime default NULL,
+        `users_id_creator` int unsigned default NULL,
+        `date_mod` datetime default NULL,
+        `users_id_lastupdater` int unsigned default NULL,
+        PRIMARY KEY  (`id`),
+        KEY `name` (`name`),
+        UNIQUE `un_per_record` (`name`, `entities_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
--- 8. Records
+
+-- 9. Records
     CREATE TABLE `glpi_plugin_gdprropa_records` (
         `id` int unsigned NOT NULL auto_increment,
         `name` varchar(250) default NULL,
@@ -163,7 +179,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 9. Records Contracts
+-- 10. Records Contracts
     CREATE TABLE `glpi_plugin_gdprropa_records_contracts` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -177,7 +193,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 10. Records Retentions
+-- 11. Records Retentions
     CREATE TABLE `glpi_plugin_gdprropa_records_retentions` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -196,7 +212,7 @@
         KEY `plugin_gdprropa_legalbasisacts_id` (`plugin_gdprropa_legalbasisacts_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
--- 11. Records Data Subjects Categories
+-- 12. Records Data Subjects Categories
     CREATE TABLE `glpi_plugin_gdprropa_records_datasubjectscategories` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -208,7 +224,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 12. Records Legal Basis Acts
+-- 13. Records Legal Basis Acts
     CREATE TABLE `glpi_plugin_gdprropa_records_legalbasisacts` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -220,7 +236,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 13. Records Personal Data Categories
+-- 14. Records Personal Data Categories
     CREATE TABLE `glpi_plugin_gdprropa_records_personaldatacategories` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -232,7 +248,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 14. Records Security Measures
+-- 15. Records Security Measures
     CREATE TABLE `glpi_plugin_gdprropa_records_securitymeasures` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -244,7 +260,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 15. Records Softwares
+-- 16. Records Softwares
     CREATE TABLE `glpi_plugin_gdprropa_records_softwares` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -256,7 +272,7 @@
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 
--- 16. Records Recipients Categories
+-- 17. Records recipients categories
     CREATE TABLE `glpi_plugin_gdprropa_records_recipientscategories` (
         `id` int unsigned NOT NULL auto_increment,
         `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
@@ -265,4 +281,15 @@
         UNIQUE KEY `unicity` (`plugin_gdprropa_records_id`, `plugin_gdprropa_recipientscategories_id`),
         KEY `plugin_gdprropa_records_id` (`plugin_gdprropa_records_id`),
         KEY `plugin_gdprropa_recipientscategories_id` (`plugin_gdprropa_recipientscategories_id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+-- 18. Records Purposes
+    CREATE TABLE `glpi_plugin_gdprropa_records_purposes` (
+        `id` int unsigned NOT NULL auto_increment,
+        `plugin_gdprropa_records_id` int unsigned NOT NULL default '0',
+        `plugin_gdprropa_purposes_id` int unsigned NOT NULL default '0',
+        PRIMARY KEY  (`id`),
+        UNIQUE KEY `unicity` (`plugin_gdprropa_records_id`, `plugin_gdprropa_purposes_id`),
+        KEY `plugin_gdprropa_records_id` (`plugin_gdprropa_records_id`),
+        KEY `plugin_gdprropa_purposes_id` (`plugin_gdprropa_purposes_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

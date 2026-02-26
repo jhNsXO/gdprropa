@@ -820,6 +820,8 @@ class CreatePDF extends CreatePDFBase
 
         $this->printLegalBasisActs($record);
 
+        $this->printPurposes($record);
+
         $this->printDataSubjectsCategories($record);
 
         $this->printRecipientsCategories($record);
@@ -1036,6 +1038,83 @@ class CreatePDF extends CreatePDFBase
         $this->insertNewPageIfBottomSpaceLeft();
     }
 
+    protected function printPurposes(Record $record): void
+    {
+        $purposes = (new Record_Purpose())
+            ->find([Record::getForeignKeyField() => $record->fields['id']]);
+
+        $this->writeInternal(
+            '<h2>' . Purpose::getTypeName(3) . '</h2>',
+            ['linebefore' => 1]
+        );
+
+        if (!count($purposes)) {
+            $this->writeInternal(__("No purpose(s) assigned.", 'gdprropa'), [
+                'border' => 1,
+                'linebefore' => 1
+            ]);
+        } else {
+            if ($this->print_options['show_inherited_from']) {
+                if ($this->print_options['show_comments']) {
+                    $cols_width = ['35', '35', '30'];
+                } else {
+                    $cols_width = ['50', '50', '0'];
+                }
+            } else {
+                if ($this->print_options['show_comments']) {
+                    $cols_width = ['40', '0', '60'];
+                } else {
+                    $cols_width = ['100', '0', '0'];
+                }
+            }
+
+            $tbl = '<table border="1" cellpadding="3" cellspacing="0">' .
+                '<thead><tr>' .
+                '<th width="' . $cols_width[0] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                __("Name") . '</h4></th>';
+            if ($this->print_options['show_inherited_from']) {
+                $tbl .=
+                    '<th width="' . $cols_width[1] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                    __("Introduced in", 'gdprropa') . '</h4></th>';
+            }
+            if ($this->print_options['show_comments']) {
+                $tbl .=
+                    '<th width="' . $cols_width[2] . '%" style="background-color:#AFAFAF;color:#FFF;"><h4>' .
+                    __("Comment") . '</h4></th>';
+            }
+            $tbl .=
+                '</tr></thead>' .
+                '<tbody>';
+
+            foreach ($purposes as $item) {
+                $rc = new Purpose();
+                $rc->getFromDB($item['plugin_gdprropa_purposes_id']);
+
+                $tbl .=
+                    '<tr>' .
+                    '<td width="' . $cols_width[0] . '%">' . $rc->fields['name'] . '</td>';
+                if ($this->print_options['show_inherited_from']) {
+                    $tbl .=
+                        '<td width="' . $cols_width[1] . '%">' .
+                        Dropdown::getDropdownName(Entity::getTable(), $rc->fields['entities_id']) . '</td>';
+                }
+                if ($this->print_options['show_comments']) {
+                    $tbl .=
+                        '<td width="' . $cols_width[2] . '%">' . nl2br($rc->fields['comment'] ?? '') . '</td>';
+                }
+                $tbl .=
+                    '</tr>';
+            }
+
+            $tbl .= '</tbody></table>';
+
+            $this->pdf->SetTextColor(0, 0, 0);
+            $this->pdf->writeHTML($tbl, true, false, false, true);
+        }
+
+        $this->insertNewPageIfBottomSpaceLeft();
+    }
+
     protected function printDataSubjectsCategories(Record $record): void
     {
         $data_subjects = (new Record_DataSubjectsCategory())
@@ -1137,9 +1216,9 @@ class CreatePDF extends CreatePDFBase
                 }
             } else {
                 if ($this->print_options['show_comments']) {
-                    $cols_width = ['50', '30', '20'];
+                    $cols_width = ['40', '0', '60'];
                 } else {
-                    $cols_width = ['80', '20', '0'];
+                    $cols_width = ['100', '0', '0'];
                 }
             }
 

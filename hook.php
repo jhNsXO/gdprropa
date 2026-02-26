@@ -51,6 +51,7 @@ use GlpiPlugin\Gdprropa\PersonalDataCategory;
 use GlpiPlugin\Gdprropa\Profile;
 use GlpiPlugin\Gdprropa\SecurityMeasure;
 use GlpiPlugin\Gdprropa\RecipientsCategory;
+use GlpiPlugin\Gdprropa\Purpose;
 
 use Glpi\Plugin\Hooks;
 
@@ -88,6 +89,7 @@ function plugin_gdprropa_uninstall()
         'glpi_plugin_gdprropa_configs',
         'glpi_plugin_gdprropa_controllerinfos',
         'glpi_plugin_gdprropa_datasubjectscategories',
+        'glpi_plugin_gdprropa_purposes',
         'glpi_plugin_gdprropa_legalbasisacts',
         'glpi_plugin_gdprropa_recipientscategories',
         'glpi_plugin_gdprropa_personaldatacategories',
@@ -96,6 +98,7 @@ function plugin_gdprropa_uninstall()
         'glpi_plugin_gdprropa_records_contracts',
         'glpi_plugin_gdprropa_records_retentions',
         'glpi_plugin_gdprropa_records_datasubjectscategories',
+        'glpi_plugin_gdprropa_records_purposes',
         'glpi_plugin_gdprropa_records_legalbasisacts',
         'glpi_plugin_gdprropa_records_recipientscategories',
         'glpi_plugin_gdprropa_records_personaldatacategories',
@@ -127,7 +130,9 @@ function plugin_gdprropa_uninstall()
         $dp->deleteByCriteria([
             'itemtype' => [
                 'Record',
+                'Purpose',
                 'LegalBasisAct',
+                'RecipientsCategory',
                 'SecurityMeasure',
                 'DataSubjectsCategory',
                 'PersonalDataCategory'
@@ -159,6 +164,7 @@ function plugin_gdprropa_getDropdown()
         DataSubjectsCategory::class => DataSubjectsCategory::getTypeName(2),
         PersonalDataCategory::class => PersonalDataCategory::getTypeName(2),
         RecipientsCategory::class => RecipientsCategory::getTypeName(2),
+        Purpose::class => Purpose::getTypeName(2),
     ];
 }
 
@@ -184,6 +190,7 @@ function plugin_gdprropa_getDatabaseRelations()
                 'glpi_plugin_gdprropa_records' => 'entities_id',
                 'glpi_plugin_gdprropa_controllerinfos' => 'entities_id',
                 'glpi_plugin_gdprropa_datasubjectscategories' => 'entities_id',
+                'glpi_plugin_gdprropa_purposes' => 'entities_id',
                 'glpi_plugin_gdprropa_recipientscategories' => 'entities_id',
                 'glpi_plugin_gdprropa_legalbasisacts' => 'entities_id',
                 'glpi_plugin_gdprropa_personaldatacategories' => 'entities_id',
@@ -212,6 +219,10 @@ function plugin_gdprropa_getDatabaseRelations()
                     'users_id_lastupdater',
                 ],
                 'glpi_plugin_gdprropa_personaldatacategories' => [
+                    'users_id_creator',
+                    'users_id_lastupdater',
+                ],
+                'glpi_plugin_gdprropa_purposes' => [
                     'users_id_creator',
                     'users_id_lastupdater',
                 ],

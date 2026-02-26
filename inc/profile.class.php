@@ -145,6 +145,7 @@ class Profile extends GlpiProfile
             [
                 'plugin_gdprropa_record' => CREATE | READ | UPDATE | DELETE | PURGE | READNOTE | UPDATENOTE,
                 'plugin_gdprropa_legalbasisact' => CREATE | READ | UPDATE | DELETE | PURGE,
+                'plugin_gdprropa_purpose' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_securitymeasure' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_datasubjectscategory' => CREATE | READ | UPDATE | DELETE | PURGE,
                 'plugin_gdprropa_recipientscategory' => CREATE | READ | UPDATE | DELETE | PURGE,
@@ -184,6 +185,18 @@ class Profile extends GlpiProfile
                     UPDATE => __("Update"),
                     DELETE => __("Delete"),
                     PURGE => __("Delete permanently")
+                ]
+            ],
+            [
+                'itemtype' => Purpose::class,
+                'label' => Purpose::getTypeName(2),
+                'field' => Purpose::$rightname,
+                'rights' => [
+                    CREATE => __("Create"),
+                    READ => __("Read"),
+                    UPDATE => __("Update"),
+                    DELETE => __("Delete"),
+                    PURGE => __("Delete permanently"),
                 ]
             ],
             [
