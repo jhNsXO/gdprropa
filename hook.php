@@ -114,15 +114,51 @@ function plugin_gdprropa_uninstall()
     }
 
     // 2. Delete logs using the GLPI Query Builder
+    // First, delete logs with FQCN itemtypes
     $DB->delete(
         'glpi_logs',
         [
             'OR' => [
-                'itemtype'      => ['LIKE', 'PluginGdprropa%'],
-                'itemtype_link' => ['LIKE', 'PluginGdprropa%']
+                'itemtype'      => ['LIKE', 'GlpiPlugin\\Gdprropa\\%'],
+                'itemtype_link' => ['LIKE', 'GlpiPlugin\\Gdprropa\\%']
             ]
         ]
     );
+
+    // Second, delete logs with short itemtypes (some plugin itemtypes are stored without namespace)
+    $short_itemtypes = [
+        'Record',
+        'Purpose',
+        'LegalBasisAct',
+        'RecipientsCategory',
+        'SecurityMeasure',
+        'DataSubjectsCategory',
+        'PersonalDataCategory',
+        'ControllerInfo',
+        'Config',
+        // old GLPI sometimes prefixes plugin classes with "PluginGdprropa"
+        'PluginGdprropaRecord',
+        'PluginGdprropaPurpose',
+        'PluginGdprropaLegalBasisAct',
+        'PluginGdprropaRecipientsCategory',
+        'PluginGdprropaSecurityMeasure',
+        'PluginGdprropaDataSubjectsCategory',
+        'PluginGdprropaPersonalDataCategory',
+        'PluginGdprropaControllerInfo',
+        'PluginGdprropaConfig'
+    ];
+    $DB->delete('glpi_logs', ['itemtype'      => $short_itemtypes]);
+    $DB->delete('glpi_logs', ['itemtype_link' => $short_itemtypes]);
+
+    // as a catch‑all remove any remaining logs whose itemtype still refers to
+    // the plugin namespace or table prefix.  This makes sure history records
+    // for objects which are dropped are not re‑used after a reinstall.
+    $DB->delete('glpi_logs', ['OR' => [
+        'itemtype'      => ['LIKE', 'PluginGdprropa%'],
+        'itemtype_link' => ['LIKE', 'PluginGdprropa%'],
+        'itemtype'      => ['LIKE', '%gdprropa%'],
+        'itemtype_link' => ['LIKE', '%gdprropa%'],
+    ]]);
 
     // 3. Delete Display Preferences
     if (class_exists('DisplayPreference')) {
