@@ -120,7 +120,7 @@ class Record_Purpose extends CommonDBRelation
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr class='tab_bg_2'><th>" . __("Add Purpose", 'gdprropa') . "</th></tr>";
             echo "<tr class='tab_bg_3'><td><center><strong>";
-            echo __("GDPR Article 30 1d", 'gdprropa');
+            echo __("GDPR Article 30 1b", 'gdprropa');
             echo "</strong></center></td></tr>";
             echo "<tr class='tab_bg_1'><td width='80%' class='center'>";
             Purpose::dropdown([

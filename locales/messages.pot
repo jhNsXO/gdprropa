@@ -1003,12 +1003,6 @@ msgid_plural "Categories of recipients"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/record_recipientscategory.class.php:62
-msgid "Category of recipients"
-msgid_plural "Categories of recipients"
-msgstr[0] ""
-msgstr[1] ""
-
 #: inc/record_recipientscategory.class.php:121
 msgid "Add Category of Recipients"
 msgstr ""

@@ -57,7 +57,9 @@ $record = new Record();
 if (isset($_POST['add'])) {
     $record->check(-1, CREATE, $_POST);
     $record->add($_POST);
-    Html::back();
+    $id = $record->getID();
+    header("Location: " . Record::getFormURLWithID($id));
+    exit;
 } elseif (isset($_POST['update'])) {
     $record->check($_POST['id'], UPDATE);
     $record->update($_POST);
