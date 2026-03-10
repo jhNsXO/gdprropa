@@ -125,7 +125,7 @@ class Record_PersonalDataCategory extends CommonDBRelation
             echo __("GDPR Article 30 1c", 'gdprropa');
             echo "</strong></center></td></tr>";
             echo "<tr class='tab_bg_1'><td width='80%' class='center'>";
-            PersonalDataCategory::dropdownLimitLevel([
+            PersonalDataCategory::dropdown([
                 'addicon' => PersonalDataCategory::canCreate(),
                 'name' => 'plugin_gdprropa_personaldatacategories_id',
                 'entity' => $record->fields['entities_id'],
