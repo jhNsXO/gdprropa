@@ -141,7 +141,7 @@ class Record_RecipientsCategory extends CommonDBRelation
         if ($number) {
             echo "<div class='spaced'>";
             if ($canedit) {
-                Html::openMassiveActionsForm('mass' . __class__ . $rand);
+                Html::openMassiveActionsForm('mass' . str_replace('\\', '', __CLASS__) . $rand);
                 $massiveactionparams = ['num_displayed' => min($_SESSION['glpilist_limit'], $number), 'container' => 'mass' . __class__ . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
