@@ -83,6 +83,7 @@ function plugin_init_gdprropa()
         }
 
         Plugin::registerClass(ControllerInfo::class, ['addtabon' => Entity::class]);
+        Plugin::registerClass(\GlpiPlugin\Gdprropa\Record_Software::class, ['addtabon' => Software::class]);
 
         $PLUGIN_HOOKS['post_init']['gdprropa'] = 'plugin_gdprropa_postinit';
 

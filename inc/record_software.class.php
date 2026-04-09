@@ -107,6 +107,17 @@ class Record_Software extends CommonDBRelation
                 }
 
                 return self::createTabEntry(Record_Software::getTypeName($nb), $nb);
+
+            case Software::class:
+                if (!Record::canView()) {
+                    return false;
+                }
+                $nb = 0;
+                if ($_SESSION['glpishow_count_on_tabs']) {
+                    $nb = self::countForItem($item);
+                }
+
+                return self::createTabEntry(Record::getTypeName($nb), $nb);
         }
 
         return '';
@@ -117,6 +128,8 @@ class Record_Software extends CommonDBRelation
         switch ($item->getType()) {
             case Record::class:
                 return self::showForRecord($item, $withtemplate);
+            case Software::class:
+                return self::showForSoftware($item, $withtemplate);
         }
 
         return true;
@@ -158,14 +171,14 @@ class Record_Software extends CommonDBRelation
             } else {
                 $entity = $record->fields['is_recursive']
                     ? getSonsOf('glpi_entities', $record->fields['entities_id']) : $record->fields['entities_id'];
-                $entity_sons = $record->fields['is_recursive'];
+                $entity_sons = false;
             }
 
             Software::dropdown([
                 'addicon' => Software::canCreate(),
                 'name' => 'softwares_id',
-                'entity' => $entity_sons,
-                //            'entity_sons' => $entity_sons,
+                'entity' => $entity,
+                'entity_sons' => $entity_sons,
                 'used' => $used,
             ]);
 //         Software::dropdown([
@@ -275,21 +288,173 @@ class Record_Software extends CommonDBRelation
         return true;
     }
 
+    public static function showForSoftware(Software $software, $withtemplate = 0): bool
+    {
+        $id = $software->fields['id'];
+        if (!Record::canView() || !$software->can($id, READ)) {
+            return false;
+        }
+
+        $canedit = Record::canUpdate() && $software->can($id, UPDATE);
+        $rand = mt_rand(1, mt_getrandmax());
+
+        $iterator = self::getListForItem($software);
+        $number = count($iterator);
+
+        $items_list = [];
+        $used = [];
+        foreach ($iterator as $data) {
+            $items_list[$data['id']] = $data;
+            $used[$data['id']] = $data['id'];
+        }
+
+        if ($canedit) {
+            echo "<div class='firstbloc'>";
+            echo "<form name='ticketitem_form$rand' id='ticketitem_form$rand' method='post'
+                    action='" . Toolbox::getItemTypeFormURL(__class__) . "'>";
+            echo "<input type='hidden' name='softwares_id' value='$id' />";
+
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr class='tab_bg_2'><th>" . __("Add a record", 'gdprropa') . "</th></tr>";
+            echo "<tr class='tab_bg_1'><td width='80%' class='center'>";
+
+            if (Config::getConfig('system', 'allow_software_from_every_entity')) {
+                $entity = 0;
+            } else {
+                $entity = $software->fields['is_recursive']
+                    ? getSonsOf('glpi_entities', $software->fields['entities_id']) : $software->fields['entities_id'];
+            }
+
+            Record::dropdown([
+                'name' => 'plugin_gdprropa_records_id',
+                'entity' => $entity,
+                'used' => $used,
+            ]);
+
+            echo "</td></tr><tr><td width='20%' class='center'>";
+            echo "<input type='submit' name='add' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
+            echo "</td></tr>";
+            echo "</table>";
+            Html::closeForm();
+            echo "</div>";
+        }
+
+        if ($iterator) {
+            echo "<div class='spaced'>";
+            if ($canedit && $number) {
+                $massive_action_form_id = 'mass' . str_replace('\\', '', static::class) . $rand;
+                Html::openMassiveActionsForm($massive_action_form_id);
+                $massive_action_params = [
+                    'container' => 'mass' . __class__ . $rand,
+                    'num_displayed' => min($_SESSION['glpilist_limit'], $number)
+                ];
+                Html::showMassiveActions($massive_action_params);
+            }
+            echo "<table class='tab_cadre_fixehov'>";
+
+            $header_begin = "<tr>";
+            $header_top = '';
+            $header_bottom = '';
+            $header_end = '';
+
+            if ($canedit && $number) {
+                $header_begin .= "<th width='10'>";
+                $header_top .= Html::getCheckAllAsCheckbox('mass' . __class__ . $rand);
+                $header_bottom .= Html::getCheckAllAsCheckbox('mass' . __class__ . $rand);
+                $header_end .= "</th>";
+            }
+
+            $header_end .= "<th>" . __("Name") . "</th>";
+            $header_end .= "<th>" . __("Entity") . "</th>";
+            $header_end .= "<th>" . __("Status") . "</th>";
+            $header_end .= "</tr>";
+
+            echo $header_begin . $header_top . $header_end;
+
+            foreach ($items_list as $data) {
+                echo "<tr class='tab_bg_1'>";
+
+                if ($canedit && $number) {
+                    echo "<td width='10'>";
+                    Html::showMassiveActionCheckBox(__class__, $data['linkid']);
+                    echo "</td>";
+                }
+
+                $link = $data['name'];
+                if ($_SESSION['glpiis_ids_visible'] || empty($data['name'])) {
+                    $link = sprintf(__("%1\$s (%2\$s)"), $link, $data['id']);
+                }
+                $name = "<a href=\"" . Record::getFormURLWithID($data['id']) . "\">" . $link . "</a>";
+
+                echo "<td class='left" . (isset($data['is_deleted']) && $data['is_deleted'] ? " tab_bg_2_2'" : "'");
+                echo ">" . $name . "</td>";
+
+                echo "<td class='left'>";
+                echo Dropdown::getDropdownName
+                    (
+                        Entity::getTable(),
+                        $data['entities_id']
+                    ) . "</td>";
+
+                echo "<td class='center'>";
+                if (isset($data['states_id'])) {
+                    echo Dropdown::getDropdownName(
+                        \State::getTable(),
+                        $data['states_id']
+                    );
+                }
+                echo "</td>";
+
+                echo "</tr>";
+            }
+
+            if ($iterator->count() > 10) {
+                echo $header_begin . $header_bottom . $header_end;
+            }
+            echo "</table>";
+
+            if ($canedit && $number) {
+                $massive_action_params['ontop'] = false;
+                Html::showMassiveActions($massive_action_params);
+                Html::closeForm();
+            }
+
+            echo "</div>";
+        }
+
+        return true;
+    }
+
     public static function countForItem(CommonDBTM $item): int
     {
+        $criteria = [];
+        if ($item instanceof Record) {
+            $criteria['plugin_gdprropa_records_id'] = $item->getID();
+        } else if ($item instanceof Software) {
+            $criteria['softwares_id'] = $item->getID();
+        } else {
+            return 0;
+        }
+
         return countElementsInTable(
             Record_Software::getTable(),
-            ['plugin_gdprropa_records_id' => $item->getID()]
+            $criteria
         );
     }
 
     public static function cleanForItem(CommonDBTM $item): void
     {
+        $criteria = [];
+        if ($item instanceof Record) {
+            $criteria['plugin_gdprropa_records_id'] = $item->getID();
+        } else if ($item instanceof Software) {
+            $criteria['softwares_id'] = $item->getID();
+        } else {
+            return;
+        }
+
         $rel = new Record_Software();
-        $rel->deleteByCriteria([
-            'itemtype' => $item->getType(),
-            'softwares_id' => $item->fields['id']
-        ]);
+        $rel->deleteByCriteria($criteria);
     }
 
     public static function getListForItem(CommonDBTM $item, int $start = 0, int $limit = 0, array $order = []): DBmysqlIterator
