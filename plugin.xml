@@ -7,6 +7,7 @@
       <short>
          <en>GDPR Records of Processing Activities</en>
          <pl>RODO Rejestr Czynności Przetwarzania</pl>
+         <de>DSGVO-Verzeichnis von Verarbeitungstätigkeiten</de>
       </short>
       <long>
          <en><![CDATA[
@@ -47,6 +48,25 @@
 
          Na podstawie pluginu DPO Register napisanego przez Karhel Tmarr. Część kodu została wykorzystana lub jest podobna do DPO Register.
          ]]></pl>
+         <de><![CDATA[
+         Erfüllen Sie die Anforderungen von Artikel 30 DSGVO. Erstellen und verwalten Sie das nach den EU-Vorschriften zur Verarbeitung personenbezogener Daten erforderliche Verzeichnis von Verarbeitungstätigkeiten. Erfassung hierarchisch pro Entität oder flach.
+
+         Hauptmerkmale:
+         * Informationen zur Verarbeitungstätigkeit
+         * Katalog von Kategorien personenbezogener Daten (kann verschachtelt werden)
+         * Mehrere betroffene Personen pro Datensatz
+         * Datenaufbewahrung (Rechtsgrundlage, Vertrag, Sonstiges)
+         * Verträge zuweisen nach gewähltem Vertragstyp: Auftragsverarbeiter, Verantwortlicher, Drittland, Sonstige, Interne Regelung
+         * Mehrere Rechtsgrundlagen pro Datensatz
+         * Katalog von Sicherheitsmaßnahmen (kann pro Entität getrennt sein)
+         * Softwarezuweisung
+         * PDF-Export
+         * Jede Entität kann separate Verantwortlichen-Informationen haben: gesetzlicher Vertreter, DSB und Name, verschiedene Vertragstypen
+         * Dashboard-Widget mit Datensätzen pro Entität und Unterentitäten
+         * Zusätzliche Konfiguration
+
+         Basiert auf dem DPO Register-Plugin von Karhel Tmarr. Ein Teil des Codes wurde übernommen oder ähnelt dem DPO Register.
+         ]]></de>
       </long>
    </description>
    <homepage>https://github.com/yild/gdprropa/</homepage>
@@ -69,6 +89,7 @@
    <langs>
       <lang>en_GB</lang>
       <lang>pl_PL</lang>
+      <lang>de_DE</lang>
    </langs>
    <license>GPL v3+</license>
    <tags>
@@ -82,6 +103,11 @@
          <tag>Inwentaryzacja</tag>
          <tag>Zarządzanie</tag>
       </pl>
+      <de>
+         <tag>DSGVO</tag>
+         <tag>Bestandsverzeichnis</tag>
+         <tag>Verwaltung</tag>
+      </de>
    </tags>
    <screenshots>
       <screenshot>https://raw.githubusercontent.com/yild/GDPRRoPA/master/gdprropa_screenshot1.png</screenshot>

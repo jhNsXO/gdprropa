@@ -26,7 +26,7 @@ Main features:
 
 ## Translation
 
-Currently en_GB and pl_PL translations available.
+Currently en_GB, pl_PL and de_DE translations available.
 
 ## Documentation
 
