@@ -122,7 +122,7 @@ msgstr "Aufbewahrung geregelt durch"
 #: inc/record.class.php:423 inc/createpdf.class.php:856
 #: inc/createpdf.class.php:1223
 msgid "Additional information"
-msgstr "Zusätzliche Informationen"
+msgstr "Verantwortliche Stellen"
 
 #: inc/record_retention.class.php:225
 msgid "Contract name"
@@ -619,9 +619,28 @@ msgstr "Papier und elektronisch"
 msgid "Electronic only"
 msgstr "Nur elektronisch"
 
+#: inc/purpose.class.php:61 inc/record_purpose.class.php:62
 #: inc/record.class.php:414 inc/createpdf.class.php:851
 msgid "Purpose"
-msgstr "Zweck"
+msgid_plural "Purposes"
+msgstr[0] "Zweck"
+msgstr[1] "Zwecke"
+
+#: inc/record_purpose.class.php:121
+msgid "Add Purpose"
+msgstr "Zweck hinzufügen"
+
+#: inc/record_purpose.class.php:123
+msgid "GDPR Article 30 1b"
+msgstr "DSGVO Artikel 30 1b"
+
+#: inc/createpdf.class.php:1052
+msgid "No purpose(s) assigned."
+msgstr "Keine Zwecke zugewiesen."
+
+#: inc/record_software.class.php:318
+msgid "Add a record"
+msgstr "Datensatz hinzufügen"
 
 #: inc/record.class.php:468 inc/createpdf.class.php:877
 msgid "PIA status"

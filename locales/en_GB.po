@@ -124,7 +124,7 @@ msgstr "Retention regulated by"
 #: inc/record.class.php:423 inc/createpdf.class.php:856
 #: inc/createpdf.class.php:1223
 msgid "Additional information"
-msgstr "Additional information"
+msgstr "Responsible entities"
 
 #: inc/record_retention.class.php:225
 msgid "Contract name"
@@ -646,9 +646,28 @@ msgstr "Paper and electronic"
 msgid "Electronic only"
 msgstr "Electronic only"
 
+#: inc/purpose.class.php:61 inc/record_purpose.class.php:62
 #: inc/record.class.php:414 inc/createpdf.class.php:851
 msgid "Purpose"
-msgstr "Purpose"
+msgid_plural "Purposes"
+msgstr[0] "Purpose"
+msgstr[1] "Purposes"
+
+#: inc/record_purpose.class.php:121
+msgid "Add Purpose"
+msgstr "Add Purpose"
+
+#: inc/record_purpose.class.php:123
+msgid "GDPR Article 30 1b"
+msgstr "GDPR Article 30 1b"
+
+#: inc/createpdf.class.php:1052
+msgid "No purpose(s) assigned."
+msgstr "No purpose(s) assigned."
+
+#: inc/record_software.class.php:318
+msgid "Add a record"
+msgstr "Add a record"
 
 #: inc/record.class.php:468 inc/createpdf.class.php:877
 msgid "PIA status"

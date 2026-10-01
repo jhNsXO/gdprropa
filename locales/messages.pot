@@ -623,8 +623,27 @@ msgstr ""
 msgid "Electronic only"
 msgstr ""
 
+#: inc/purpose.class.php:61 inc/record_purpose.class.php:62
 #: inc/record.class.php:414 inc/createpdf.class.php:851
 msgid "Purpose"
+msgid_plural "Purposes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/record_purpose.class.php:121
+msgid "Add Purpose"
+msgstr ""
+
+#: inc/record_purpose.class.php:123
+msgid "GDPR Article 30 1b"
+msgstr ""
+
+#: inc/createpdf.class.php:1052
+msgid "No purpose(s) assigned."
+msgstr ""
+
+#: inc/record_software.class.php:318
+msgid "Add a record"
 msgstr ""
 
 #: inc/record.class.php:468 inc/createpdf.class.php:877

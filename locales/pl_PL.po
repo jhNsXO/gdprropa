@@ -127,7 +127,7 @@ msgstr "Retencje danych reguluje"
 #: inc/record.class.php:423 inc/createpdf.class.php:856
 #: inc/createpdf.class.php:1223
 msgid "Additional information"
-msgstr "Informacje dodatkowe"
+msgstr "Podmioty odpowiedzialne"
 
 #: inc/record_retention.class.php:225
 msgid "Contract name"
@@ -661,9 +661,29 @@ msgstr "Papierowo i elektronicznie"
 msgid "Electronic only"
 msgstr "Wyłącznie elektronicznie"
 
+#: inc/purpose.class.php:61 inc/record_purpose.class.php:62
 #: inc/record.class.php:414 inc/createpdf.class.php:851
 msgid "Purpose"
-msgstr "Cel"
+msgid_plural "Purposes"
+msgstr[0] "Cel"
+msgstr[1] "Cele"
+msgstr[2] "Celów"
+
+#: inc/record_purpose.class.php:121
+msgid "Add Purpose"
+msgstr "Dodaj cel"
+
+#: inc/record_purpose.class.php:123
+msgid "GDPR Article 30 1b"
+msgstr "Artykuł 30 1b RODO"
+
+#: inc/createpdf.class.php:1052
+msgid "No purpose(s) assigned."
+msgstr "Nie przypisano celów."
+
+#: inc/record_software.class.php:318
+msgid "Add a record"
+msgstr "Dodaj wpis"
 
 #: inc/record.class.php:468 inc/createpdf.class.php:877
 msgid "PIA status"
